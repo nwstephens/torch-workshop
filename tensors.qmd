@@ -403,7 +403,7 @@ glimpse(Orange)
     $ age           <dbl> 118, 484, 664, 1004, 1231, 1372, 1582,...
     $ circumference <dbl> 30, 58, 87, 115, 120, 142, 145, 33, 69,...
 
-```{r}
+```
 torch_tensor(Orange)
 ```
 
@@ -447,6 +447,10 @@ torch_tensor(orange_) %>% print(n = 7)
 Let's try the same thing with another `data.frame`, `okc` from `modeldata`:
 
 ```{r}
+#install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/__linux__/bionic/2021-06-08")
+```
+
+```{r}
 library(modeldata)
 
 data(okc)
@@ -484,7 +488,7 @@ This didn't throw an error, but what does it mean? These are the actual values s
 
 Next, let's see about `location`, one of the columns of type `character`. What happens if we just pass it to `torch` as-is?
 
-```{r}
+```
 torch_tensor(okc$location)
 ```
 
@@ -1040,7 +1044,7 @@ Here we added a singleton dimension in front. Alternatively, we could have used 
 
 Now, will that zero-copy technique ever fail? Here is an example where it does:
 
-```{r}
+```
 t <- torch_randn(3, 3)
 t$t()$view(9)
 ```

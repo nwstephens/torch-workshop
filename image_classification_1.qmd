@@ -266,16 +266,22 @@ One thousand classes is a lot; and with images typically being processed at a re
 
 We start by downloading the data.
 
-```{bash}
-#wget http://cs231n.stanford.edu/tiny-imagenet-200.zip
-#unzip tiny-imagenet-200.zip
+Linux:
+
+```
+wget http://cs231n.stanford.edu/tiny-imagenet-200.zip
+unzip tiny-imagenet-200.zip
+```
+
+Windows:
+
+```
+tiny_imagenet_dataset(".", download = TRUE)
 ```
 
 ```{r}
 set.seed(777)
 torch_manual_seed(777)
-
-dir <- "tiny-imagenet-200"
 
 train_ds <- tiny_imagenet_dataset(
   root=".",
