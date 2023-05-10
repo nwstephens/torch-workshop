@@ -34,14 +34,16 @@ That filter, also called a *kernel*, is going to slide over the input sequence, 
 
 Now, we have the kernel sliding over the signal. Like so:
 
-    0,0,1,1,1,-1,0,-1,-1,1,1,1,-1,0
-    1,1,1
+```         
+0,0,1,1,1,-1,0,-1,-1,1,1,1,-1,0
+1,1,1
 
-    0,0,1,1,1,-1,0,-1,-1,1,1,1,-1,0
-       1,1,1
+0,0,1,1,1,-1,0,-1,-1,1,1,1,-1,0
+   1,1,1
 
-    0,0,1,1,1,-1,0,-1,-1,1,1,1,-1,0
-          1,1, 1
+0,0,1,1,1,-1,0,-1,-1,1,1,1,-1,0
+      1,1, 1
+```
 
 And so on.
 
@@ -63,9 +65,11 @@ Nicely, the open-source graphics program Gimp has a feature that allows one to e
 
 Say we want to find the left edge of the square. We are looking for locations where the color changes, horizontally, from black to white. This can be achieved with a 3x3 kernel that looks like this (@fig-images-square-left):
 
-     0 0 0
-    -1 1 0
-     0 0 0
+```         
+ 0 0 0
+-1 1 0
+ 0 0 0
+```
 
 This kernel is *similar* to the edge type we're interested in in that it has, in the second row, a horizontal transition from -1 to 1.
 
@@ -177,14 +181,16 @@ To test the code, we can call the un-trained model on our example image:
 model(img)
 ```
 
-    torch_tensor
-    0.01 *
-     6.4821  3.4166 -5.6050
-    [ CPUFloatType{1,3} ][ grad_fn = <AddmmBackward0> ]
+```         
+torch_tensor
+0.01 *
+ 6.4821  3.4166 -5.6050
+[ CPUFloatType{1,3} ][ grad_fn = <AddmmBackward0> ]
+```
 
 One final note about that template. When you were reading the code above, one line that might have stood out is the following:
 
-```
+```         
 self$output <- nn_linear(2304, 3)
 ```
 
@@ -217,7 +223,7 @@ Now for the three non-mandatory arguments to explore.
 For non-mandatory arguments `padding`, `stride`, and `dilation`, @tbl-images-convargs has a summary of defaults and effects.
 
 | Argument   | Default | Action (if non-default)                                             |
-|-------------------|-------------------|-----------------------------------|
+|------------|------------|-----------------------------------------------|
 | `padding`  | 0       | virtual rows/columns added around the image                         |
 | `stride`   | 1       | kernel moves across image at bigger step size ("jumps" over pixels) |
 | `dilation` | 1       | kernel is applied to spread-out image pixels ("holes" in kernel)    |
@@ -260,15 +266,20 @@ One thousand classes is a lot; and with images typically being processed at a re
 
 We start by downloading the data.
 
+```{bash}
+#wget http://cs231n.stanford.edu/tiny-imagenet-200.zip
+#unzip tiny-imagenet-200.zip
+```
+
 ```{r}
 set.seed(777)
 torch_manual_seed(777)
 
-dir <- "~/.torch-datasets"
+dir <- "tiny-imagenet-200"
 
 train_ds <- tiny_imagenet_dataset(
-  dir,
-  download = TRUE,
+  root=".",
+  download = FALSE,
   transform = function(x) {
     x %>%
       transform_to_tensor() 
@@ -276,7 +287,7 @@ train_ds <- tiny_imagenet_dataset(
 )
 
 valid_ds <- tiny_imagenet_dataset(
-  dir,
+  root=".",
   split = "val",
   transform = function(x) {
     x %>%
@@ -309,7 +320,9 @@ batch <- train_dl %>%
 dim(batch$x)
 ```
 
-    [1] 128   3  64  64
+```         
+[1] 128   3  64  64
+```
 
 Classes are integers between 1 to 200:
 
@@ -317,39 +330,41 @@ Classes are integers between 1 to 200:
 batch$y
 ```
 
-    torch_tensor
-     172
-      17
-      76
-      78
-     111
-      57
-       8
-     166
-     146
-     114
-      41
-      28
-     138
-      98
-      57
-      98
-      25
-     148
-     166
-     135
-      31
-     182
-      48
-     184
-     160
-     166
-      40
-     115
-     161
-      21
-    ... [the output was truncated (use n=-1 to disable)]
-    [ CPULongType{128} ]
+```         
+torch_tensor
+ 172
+  17
+  76
+  78
+ 111
+  57
+   8
+ 166
+ 146
+ 114
+  41
+  28
+ 138
+  98
+  57
+  98
+  25
+ 148
+ 166
+ 135
+  31
+ 182
+  48
+ 184
+ 160
+ 166
+  40
+ 115
+ 161
+  21
+... [the output was truncated (use n=-1 to disable)]
+[ CPULongType{128} ]
+```
 
 Now we define a convnet, and train it with `luz`.
 
@@ -405,6 +420,10 @@ convnet <- nn_module(
 Now, we train the network. The classifier outputs raw logits, not probabilities; this means we need to make use of `nn_cross_entropy_loss()`. We train for fifty epochs:
 
 ```{r}
+fitted <- luz_load("fitted.luz")
+```
+
+```         
 fitted <- convnet %>%
   setup(
     loss = nn_cross_entropy_loss(),
@@ -418,31 +437,32 @@ fitted <- convnet %>%
       valid_data = valid_dl,
       verbose = TRUE
       )
-
 ```
 
 After fifty epochs, this resulted in accuracy values of 0.92 and 0.22, on the training and test sets, respectively. This is quite a difference! On the training set, this model is near-perfect; on the test set, it only gets up to every fourth image correct.
 
-    Epoch 1/50
-    Train metrics: Loss: 5.0822 - Acc: 0.0146                                     
-    Valid metrics: Loss: 4.8564 - Acc: 0.0269
-    Epoch 2/50
-    Train metrics: Loss: 4.5545 - Acc: 0.0571                                     
-    Valid metrics: Loss: 4.2592 - Acc: 0.0904
-    Epoch 3/50
-    Train metrics: Loss: 4.0727 - Acc: 0.1122                                     
-    Valid metrics: Loss: 3.9097 - Acc: 0.1381
-    ...
-    ...
-    Epoch 48/50
-    Train metrics: Loss: 0.3033 - Acc: 0.9064                                     
-    Valid metrics: Loss: 10.2999 - Acc: 0.2188
-    Epoch 49/50
-    Train metrics: Loss: 0.2932 - Acc: 0.9098                                     
-    Valid metrics: Loss: 10.7348 - Acc: 0.222
-    Epoch 50/50
-    Train metrics: Loss: 0.2733 - Acc: 0.9152                                     
-    Valid metrics: Loss: 10.641 - Acc: 0.2204
+```         
+Epoch 1/50
+Train metrics: Loss: 5.0822 - Acc: 0.0146                                     
+Valid metrics: Loss: 4.8564 - Acc: 0.0269
+Epoch 2/50
+Train metrics: Loss: 4.5545 - Acc: 0.0571                                     
+Valid metrics: Loss: 4.2592 - Acc: 0.0904
+Epoch 3/50
+Train metrics: Loss: 4.0727 - Acc: 0.1122                                     
+Valid metrics: Loss: 3.9097 - Acc: 0.1381
+...
+...
+Epoch 48/50
+Train metrics: Loss: 0.3033 - Acc: 0.9064                                     
+Valid metrics: Loss: 10.2999 - Acc: 0.2188
+Epoch 49/50
+Train metrics: Loss: 0.2932 - Acc: 0.9098                                     
+Valid metrics: Loss: 10.7348 - Acc: 0.222
+Epoch 50/50
+Train metrics: Loss: 0.2733 - Acc: 0.9152                                     
+Valid metrics: Loss: 10.641 - Acc: 0.2204
+```
 
 With two hundred options to choose from, "every fourth" does not even seem so bad; however, looking at the enormous difference between both metrics, something is not quite right. The model has severely *overfitted* to the training set -- memorized the training samples, in other words. Overfitting is not specific to deep learning; it is the nemesis of all of machine learning. We'll consecrate the whole next chapter to this topic.
 
@@ -466,38 +486,40 @@ However, if we're just interested in determining the most likely class, we can a
 torch_argmax(preds, dim = 2)
 ```
 
-    torch_tensor
-      55
-       1
-       1
-       1
-       1
-       1
-       1
-      89
-      45
-       1
-       1
-      19
-       1
-     190
-      14
-       1
-     185
-       1
-       1
-     150
-      77
-      37
-     131
-     193
-      80
-       1
-       1
-      45
-       1
-     131
-    ... [the output was truncated (use n=-1 to disable)]
-    [ CUDALongType{10000} ]
+```         
+torch_tensor
+  55
+   1
+   1
+   1
+   1
+   1
+   1
+  89
+  45
+   1
+   1
+  19
+   1
+ 190
+  14
+   1
+ 185
+   1
+   1
+ 150
+  77
+  37
+ 131
+ 193
+  80
+   1
+   1
+  45
+   1
+ 131
+... [the output was truncated (use n=-1 to disable)]
+[ CUDALongType{10000} ]
+```
 
 We could now go on to compare predictions with actual classes, looking for inspiration on what could be done better. But at this stage, there is still a *lot* that can be done better! We will return to this application in due time, but first, we need to learn about overfitting, and ways to speed up model training.
