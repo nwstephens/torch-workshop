@@ -1,4 +1,0 @@
-# Running torch {#sec:running-torch}
-
-
-- installation
