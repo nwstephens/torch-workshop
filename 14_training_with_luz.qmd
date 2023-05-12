@@ -88,7 +88,7 @@ fitted <- net %>%
     d_in = d_in,
     d_hidden = d_hidden, d_out = d_out
   ) %>%
-  fit(dl, epochs = 200)
+  fit(dl, epochs = 20)
 ```
 
 Running this code, you should see output approximately like this:
@@ -117,7 +117,7 @@ fitted <- net %>%
     d_in = d_in,
     d_hidden = d_hidden, d_out = d_out
   ) %>%
-  fit(ds, epochs = 200)
+  fit(ds, epochs = 20)
 ```
 
 Or even, `torch` tensors:
@@ -129,7 +129,7 @@ fitted <- net %>%
     d_in = d_in,
     d_hidden = d_hidden, d_out = d_out
   ) %>%
-  fit(list(x, y), epochs = 200)
+  fit(list(x, y), epochs = 20)
 ```
 
 And finally, R objects, which can be convenient when we aren't already working with tensors.
@@ -141,7 +141,7 @@ fitted <- net %>%
     d_in = d_in,
     d_hidden = d_hidden, d_out = d_out
   ) %>%
-  fit(list(as.matrix(x), as.matrix(y)), epochs = 200)
+  fit(list(as.matrix(x), as.matrix(y)), epochs = 20)
 ```
 
 In the following sections, we'll always be working with `dataloader()`s; but in some cases those "shortcuts" may come in handy.
@@ -205,7 +205,7 @@ fitted <- net %>%
     d_in = d_in,
     d_hidden = d_hidden, d_out = d_out
   ) %>%
-  fit(train_dl, epochs = 200, valid_data = valid_dl)
+  fit(train_dl, epochs = 20, valid_data = valid_dl)
 ```
 
     Epoch 1/200
@@ -322,7 +322,7 @@ fitted <- net %>%
               d_out = d_out) %>%
   fit(
     train_dl,
-    epochs = 200,
+    epochs = 20,
     valid_data = valid_dl,
     callbacks = list(
       luz_callback_model_checkpoint(path = "./models/",

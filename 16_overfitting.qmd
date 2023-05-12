@@ -46,10 +46,8 @@ library(torch)
 library(torchvision)
 library(luz)
 
-dir <- "~/.torch-datasets"
-
 valid_ds <- mnist_dataset(
-  dir,
+  root = ".",
   download = TRUE,
   train = FALSE,
   transform = transform_to_tensor
@@ -78,7 +76,7 @@ Now, we use the training set to experiment with data augmentation\index{data aug
 
 ```{r}
 train_ds <- mnist_dataset(
-  dir,
+  root = ".",
   download = TRUE,
   transform = . %>%
     transform_to_tensor() %>%
@@ -129,7 +127,7 @@ In general, this would depend on the dataset, and more even, on the task. Think 
 
 ```{r}
 train_ds <- mnist_dataset(
-  dir,
+  root = ".",
   download = TRUE,
   transform = . %>%
     transform_to_tensor() %>%
@@ -251,7 +249,7 @@ Here is an example:
 ```{r}
 # redefine the training set to not use augmentation
 train_ds <- mnist_dataset(
-  dir,
+  root = ".",
   download = TRUE,
   transform = transform_to_tensor
 )

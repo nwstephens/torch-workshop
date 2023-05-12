@@ -35,11 +35,9 @@ library(luz)
 set.seed(777)
 torch_manual_seed(777)
 
-dir <- "~/.torch-datasets"
-
 train_ds <- tiny_imagenet_dataset(
-  dir,
-  download = TRUE,
+  root = ".",
+  download = FALSE,
   transform = . %>%
     transform_to_tensor() %>%
     transform_random_affine(
@@ -52,7 +50,7 @@ train_ds <- tiny_imagenet_dataset(
 )
 
 valid_ds <- tiny_imagenet_dataset(
-  dir,
+  root = ".",
   split = "val",
   transform = function(x) {
     x %>%

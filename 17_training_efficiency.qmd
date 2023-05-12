@@ -96,10 +96,8 @@ library(torch)
 library(torchvision)
 library(luz)
 
-dir <- "~/.torch-datasets" 
-
 train_ds <- mnist_dataset(
-  dir,
+  root = ".",
   download = TRUE,
   transform = . %>%
     transform_to_tensor() %>%
@@ -111,7 +109,7 @@ train_ds <- mnist_dataset(
 train_dl <- dataloader(train_ds, batch_size = 128, shuffle = TRUE)
 
 valid_ds <- mnist_dataset(
-  dir,
+  root = ".",
   train = FALSE,
   transform = transform_to_tensor
 )
@@ -299,7 +297,7 @@ A convenient place to perform the expansion is as part of the data pre-processin
 
 ```{r}
 train_ds <- mnist_dataset(
-  dir,
+  root = ".",
   download = TRUE,
   transform = . %>%
     transform_to_tensor() %>%
@@ -316,7 +314,7 @@ train_dl <- dataloader(
 )
 
 valid_ds <- mnist_dataset(
-  dir,
+  root = ".",
   train = FALSE,
   transform = . %>%
     transform_to_tensor %>%
