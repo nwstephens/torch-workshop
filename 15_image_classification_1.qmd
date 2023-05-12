@@ -426,7 +426,7 @@ convnet <- nn_module(
 Now, we train the network. The classifier outputs raw logits, not probabilities; this means we need to make use of `nn_cross_entropy_loss()`. We train for fifty epochs:
 
 ```{r}
-fitted <- luz_load("fitted.luz")
+fitted <- luz_load("fitted.rds")
 ```
 
 ```         
@@ -494,36 +494,36 @@ torch_argmax(preds, dim = 2)
 
 ```         
 torch_tensor
-  55
-   1
-   1
-   1
-   1
-   1
-   1
-  89
-  45
-   1
-   1
-  19
-   1
+ 144
+   5
+  22
+  84
  190
-  14
-   1
- 185
-   1
-   1
- 150
-  77
-  37
- 131
- 193
-  80
-   1
-   1
-  45
-   1
- 131
+ 103
+ 186
+  12
+  39
+  43
+  61
+ 108
+ 140
+  21
+  43
+  44
+  24
+  81
+  79
+ 158
+ 169
+ 171
+  50
+ 130
+  67
+  46
+ 103
+  55
+ 180
+  35
 ... [the output was truncated (use n=-1 to disable)]
 [ CUDALongType{10000} ]
 ```

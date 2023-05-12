@@ -1093,7 +1093,9 @@ That was probably a bit underwhelming. We're used to that; from R. But the follo
 ```{r}
 m <- matrix(1:15, ncol = 5, byrow = TRUE)
 m2 <- matrix(1:5, ncol = 5, byrow = TRUE)
+```
 
+```
 m + m2
 ```
 
@@ -1197,9 +1199,18 @@ and then, broadcasting takes place:
 
 In this example, we see that broadcasting can act on both tensors at the same time. The thing to keep in mind, though, is that we always start looking from the right. For example, no broadcasting in the world could make *this* work:
 
-```{r}
+```
 torch_zeros(4, 3, 2, 1)$add(torch_ones(4, 3, 2)) # error!
 ```
+
+    Error in (function (self, other, alpha)  : 
+      The size of tensor a (2) must match the size of tensor b (3) at non-singleton dimension 2
+    Exception raised from infer_size_impl at ../aten/src/ATen/ExpandUtils.cpp:35 (most recent call first):
+    frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x6b (0x7f14afc553cb in /usr/local/lib/R/site-library/torch/lib/libc10.so)
+    frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xce (0x7f14afc50d9e in /usr/local/lib/R/site-library/torch/lib/libc10.so)
+    frame #2: at::infer_size_dimvector(c10::ArrayRef<long>, c10::ArrayRef<long>) + 0x48b (0x7f122c33bd3b in /usr/local/lib/R/site-library/torch/lib/libtorch_cpu.so)
+    frame #3: at::TensorIteratorBase::compute_shape(at::TensorIteratorConfig const&) + 0x10d (0x7f122c3a5bfd in /usr/local/lib/R/site-library/torch/lib/libtorch_cpu.so)
+    frame #4: at::TensorIt
 
 ------------------------------------------------------------------------
 
