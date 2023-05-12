@@ -39,7 +39,9 @@ In a nutshell, the optimization procedure then looks somewhat like this:
 
 ```{r}
 library(torch)
+```
 
+```
 # attention: this is not the correct procedure yet!
 
 for (i in 1:num_iterations) {
@@ -79,7 +81,7 @@ There's one other thing we have to tell it. By default, `torch` accumulates the 
 
 Taking into account these considerations, the parameter update should look like this:
 
-```{r}
+```
 with_no_grad({
   x$sub_(lr * x$grad)
   x$grad$zero_()

@@ -22,7 +22,7 @@ A `dataloader()`'s role is to feed input to the model in *batches*. One immediat
 
 Here is a blueprint for creating a `dataset()`:
 
-```{r}
+```
 ds <- dataset()(
   initialize = function(...) {
     ...

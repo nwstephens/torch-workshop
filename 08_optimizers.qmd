@@ -22,7 +22,9 @@ Here is how that last part looked:
 
 ```{r}
 library(torch)
+```
 
+```
 # compute gradient of loss w.r.t. all tensors with
 # requires_grad = TRUE
 loss$backward()
@@ -70,7 +72,7 @@ Once we have an optimizer object, parameter updates are triggered by calling its
 
 This is the complete code replacing the above manual procedure:
 
-```{r}
+```
 # compute gradient of loss w.r.t. all tensors with
 # requires_grad = TRUE
 # no change here

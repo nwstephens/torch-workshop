@@ -158,7 +158,7 @@ In each training phase, gradients are computed and weights are changed; during v
 
 The former is done in `setup()`, and for a regression task, common choices are mean squared or mean absolute error (MSE or MAE, resp.). As we're already using MSE as our loss, let's choose MAE for a metric:
 
-```{r}
+```
 fitted <- net %>%
   setup(
     loss = nn_mse_loss(),
@@ -377,7 +377,7 @@ In the next chapter, we discuss essential ingredients of modern deep learning we
 
 For clarity, we repeat here the two things that do *not* depend on whether you're using `luz` or not: `dataloader()` preparation and model definition.
 
-```{r}
+```
 
 # input dimensionality (number of input features)
 d_in <- 3
@@ -431,7 +431,7 @@ net <- nn_module(
 
 Recall that with `luz`, now all that separates you from watching how training and validation losses evolve is a snippet like this:
 
-```{r}
+```
 fitted <- net %>%
   setup(
     loss = nn_mse_loss(),
@@ -448,7 +448,7 @@ Without `luz`, however, things to be taken care of fall into three distinct cate
 
 First, instantiate the network, and, if CUDA is installed, move its weights to the GPU.
 
-```{r}
+```
 device <- torch_device(if
 (cuda_is_available()) {
   "cuda"
@@ -463,7 +463,7 @@ model <- model$to(device = device)
 
 Second, create an optimizer.
 
-```{r}
+```
 optimizer <- optim_adam(model$parameters)
 ```
 
@@ -473,17 +473,21 @@ For clarity, we pack training logic and validation logic each into their own fun
 
 While `train_batch()` and `valid_batch()`, per se, trigger the usual actions in the usual order, note the device placement calls: For the model to be able to take in the data, they have to live on the same device. Then, for mean-squared-error computation to be possible, the target tensors need to live there as well.
 
-```{r}
+```
 
 train_batch <- function(b) {
   optimizer$zero_grad()
   output <- model(b[[1]]$to(device = device))
   target <- b[[2]]$to(device = device)
-
-  loss <- nn_mse_loss(output, target)
+  loss <- nnf_mse_loss(output, target)
   loss$backward()
   optimizer$step()
-
+  loss$item()
+}
+valid_batch <- function(b) {
+  output <- model(b[[1]]$to(device = device))
+  target <- b[[2]]$to(device = device)
+  loss <- nnf_mse_loss(output, target)
   loss$item()
 }
 
@@ -499,8 +503,7 @@ valid_batch <- function(b) {
 
 The loop over epochs contains two lines that deserve special attention: `model$train()` and `model$eval()`. The former instructs `torch` to put the model in training mode; the latter does the opposite. With the simple model we're using here, it wouldn't be a problem if you forgot those calls; however, when later we'll be using regularization layers like `nn_dropout()` and `nn_batch_norm2d()`, calling these methods in the correct places is essential. This is because these layers behave differently during evaluation and training.
 
-```{r}
-
+```
 num_epochs <- 200
 
 for (epoch in 1:num_epochs) {
