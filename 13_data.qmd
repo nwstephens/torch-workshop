@@ -166,10 +166,8 @@ Since we're going to talk about image processing in a later chapter, I won't com
 ```{r}
 library(torchvision)
 
-dir <- "~/.torch-datasets"
-
 ds <- mnist_dataset(
-  root = dir,
+  root = ".",
   train = TRUE, # default
   download = TRUE,
   transform = function(x) {
