@@ -1,5 +1,9 @@
 # Tensors {#sec:tensors}
 
+```{r}
+#install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/__linux__/bionic/2021-06-08")
+```
+
 ## What's in a tensor?
 
 To do anything useful with `torch`, you need to know about tensors. Not tensors in the math/physics sense. In deep learning frameworks such as TensorFlow and (Py-)Torch, *tensors* are "just" multi-dimensional arrays optimized for fast computation -- not on the CPU only but also, on specialized devices such as GPUs and TPUs.
@@ -52,8 +56,10 @@ t2$dtype
 
 ```{r}
 # only applicable if you have a GPU
-t2 <- t1$to(device = "cuda")
-t2$device
+if(cuda_is_available()){
+  t2 <- t1$to(device = "cuda")
+  t2$device
+}
 ```
 
     torch_device(type='cuda', index=0)
@@ -122,7 +128,7 @@ torch_tensor(1:5, dtype = torch_float())
 Analogously, the default device is the CPU; but we can also create a tensor that, right from the outset, is located on the GPU:
 
 ```{r}
-torch_tensor(1:5, device = "cuda")
+if(cuda_is_available()) torch_tensor(1:5, device = "cuda")
 ```
 
     torch_tensor
@@ -446,9 +452,6 @@ torch_tensor(orange_) %>% print(n = 7)
 
 Let's try the same thing with another `data.frame`, `okc` from `modeldata`:
 
-```{r}
-#install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/__linux__/bionic/2021-06-08")
-```
 
 ```{r}
 library(modeldata)
