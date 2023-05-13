@@ -19,6 +19,8 @@ Once we've made those changes, the code will be more modular, and a lot more rea
 As a prerequisite, we generate the data, same as last time.
 
 ```{r}
+library(torch)
+
 # input dimensionality (number of input features)
 d_in <- 3
 # number of observations in training set
