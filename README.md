@@ -44,8 +44,8 @@ docker pull rocker/rstudio
 docker run --gpus=all -d -t -e PASSWORD=rstudio -p 8787:8787 --name rstudio rocker/rstudio
 ```
 
-4. Open RStudio Server from your browser by opening `http://<your.ip.address>:8787/`. Make sure port 8787 is open. Your username is `rstudio` and your password is `rstudio`.
-5. Configure RStudio Server to download package binaries from the Posit Package Manager
+4. Open RStudio Server from your browser by opening `http://<your.ip.address>:8787/`. Make sure port 8787 is open. Your username is `rstudio` and your password is `rstudio`
+5. Configure RStudio Server to download package binaries from the [Posit Package Manager](https://packagemanager.rstudio.com/client/#/)
 
 ```
 # For Red Hat 8 use:
