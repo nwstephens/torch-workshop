@@ -45,33 +45,39 @@ docker run --gpus=all -d -t -e PASSWORD=rstudio -p 8787:8787 --name rstudio rock
 ```
 
 4. Open RStudio Server from your browser by opening `http://<your.ip.address>:8787/`. Make sure port 8787 is open. Your username is `rstudio` and your password is `rstudio`.
-5. Install `torch` from the pre-built binaries (Warning! This download is 2Gb)
+5. Configure RStudio Server to download package binaries from the Posit Package Manager
+
+```
+# For Red Hat 8 use:
+https://packagemanager.rstudio.com/cran/__linux__/centos8/latest
+
+# For Ubuntu 20.04 use:
+https://packagemanager.rstudio.com/cran/__linux__/focal/latest
+```
+6. Install `torch` from the pre-built binaries (Warning! This download is 2Gb)
 
 ```{r}
 options(timeout = 600)
 install.packages("torch", repos = "https://storage.googleapis.com/torch-lantern-builds/packages/cu117/0.10.0/")
 ```
 
-6. Make sure your CUDA device is available (this should return `TRUE`)
+7. Make sure your CUDA device is available (this should return `TRUE`)
 
 ```{r}
 library(torch)
 cuda_is_available()
 ```
 
-6. Clone this repos and make sure the working directory is `torch-workshop`
-7. Download `Tiny ImageNet` data
+8. Clone this repos and make sure the working directory is `torch-workshop`
+9. Download `Tiny ImageNet` data
 
 ```{bash}
 wget http://cs231n.stanford.edu/tiny-imagenet-200.zip
 unzip tiny-imagenet-200.zip
 ```
 
-8. Install the `modeldata` package from the `2021-06-08` snapshot
+10. Install the `modeldata` package from the `2021-06-08` snapshot
 
 ```{r}
 install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/__linux__/bionic/2021-06-08")
 ```
-
-
-
