@@ -1118,7 +1118,7 @@ In deep learning, early stopping is ubiquitous; it's hard to imagine why one wou
 
 ![](images/efficiency-mnist-lr-finder.png)
 
-## 18.Image classification: Improving performance
+## 18. Image classification: Improving performance
 
 **Always use**
 
