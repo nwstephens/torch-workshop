@@ -15,13 +15,12 @@ echo: true
 
 ## About Me
 
-* Currently Senior Manager for Developer Relations at NVIDIA. 
-* Background in analytic solutions and consulting.
-* Experience building data science teams, architecting analytic infrastructure, and operationalizing data products. 
-* Worked at RStudio, oversaw the solutions engineering team.
-* Longtime advocate for operationalizing data science using open-source software.
-* Relocated to Peoria, AZ in 2020.
-
+-   Currently Senior Manager for Developer Relations at NVIDIA.
+-   Background in analytic solutions and consulting.
+-   Experience building data science teams, architecting analytic infrastructure, and operationalizing data products.
+-   Worked at RStudio, oversaw the solutions engineering team.
+-   Longtime advocate for operationalizing data science using open-source software.
+-   Relocated to Peoria, AZ in 2020.
 
 ## Deep Learning and Scientific Computing With R Torch
 
@@ -33,22 +32,21 @@ This workshop presents a conceptual overview of the [R interface for PyTorch](ht
 
 This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this writing, is one of the major deep-learning and scientific-computing frameworks, widely used across industries and areas of research.
 
-1. Introduction to core `torch`: Basic structures, automatic differentiation, optimizers, etc.
-2. Applications of deep learning: Image recognition, time series, audio classification, etc. 
-3. Non-deep-learning: Matrix computations, calculating the Discrete Fourier Transform, and wavelet analysis.
-
+1.  Introduction to core `torch`: Basic structures, automatic differentiation, optimizers, etc.
+2.  Applications of deep learning: Image recognition, time series, audio classification, etc.
+3.  Non-deep-learning: Matrix computations, calculating the Discrete Fourier Transform, and wavelet analysis.
 
 ## Workshop Contents
 
 **Covering first two sections:**
 
-* Getting familiar with torch
-  * Torch mechanics: `3`, 4, 9
-  * What can we do? 5, `6`, 10
-  * Abstraction: 7, 8, `11`
-* Deep learning with torch
-  * Basic image classification: 13, `14`, `15`
-  * Opitmized image classification: 16, 17, 18
+-   Getting familiar with torch
+    -   Torch mechanics: `3`, 4, 9
+    -   What can we do? 5, `6`, 10
+    -   Abstraction: 7, 8, `11`
+-   Deep learning with torch
+    -   Basic image classification: 13, `14`, `15`
+    -   Opitmized image classification: 16, 17, 18
 
 *Remaining chapters are left to the reader*
 
@@ -56,26 +54,26 @@ This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this wr
 
 ## CPU Setup (Windows and Mac)
 
-1. Install R and RStudio
-2. Install `torch`
+1.  Install R and RStudio
+2.  Install `torch`
 
 ```{r}
 install.packages("torch")
 ```
 
-3. Clone the [torch-workshop](https://github.com/nwstephens/torch-workshop.git) repos and make sure the working directory is `torch-workshop`
+3.  Clone the [torch-workshop](https://github.com/nwstephens/torch-workshop.git) repos and make sure the working directory is `torch-workshop`
 
 ```{bash}
 git clone https://github.com/nwstephens/torch-workshop
 ```
 
-4. Download `Tiny ImageNet` data
+4.  Download `Tiny ImageNet` data
 
 ```{r}
 tiny_imagenet_dataset(".", download = TRUE)
 ```
 
-5. Install the `modeldata` package from the `2021-06-08` snapshot
+5.  Install the `modeldata` package from the `2021-06-08` snapshot
 
 ```{r}
 install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/__linux__/bionic/2021-06-08")
@@ -83,55 +81,56 @@ install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/_
 
 ## GPU Accelerated R Setup
 
-* Obtaining an NVIDIA GPU
-  * [Rig](https://boxx.com/)
-  * [Cloud](https://rapids.ai/#quick-start)
-  * [Data Center](https://www.nvidia.com/en-us/data-center/)
-* Installing and configuring an NVIDIA GPU
-  * [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
-  * [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
-* Installing and configuring R
-  * [The Rocker Project](https://rocker-project.org/)
-  * [Posit Package Manager](https://packagemanager.rstudio.com/client/#/)
-  * [R Binaries](https://github.com/rstudio/r-builds)
+-   Obtaining an NVIDIA GPU
+    -   [Rig](https://boxx.com/)
+    -   [Cloud](https://rapids.ai/#quick-start)
+    -   [Data Center](https://www.nvidia.com/en-us/data-center/)
+-   Installing and configuring an NVIDIA GPU
+    -   [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
+    -   [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+-   Installing and configuring R
+    -   [The Rocker Project](https://rocker-project.org/)
+    -   [Posit Package Manager](https://packagemanager.rstudio.com/client/#/)
+    -   [R Binaries](https://github.com/rstudio/r-builds)
 
 ## GPU Setup (Linux)
 
-1. Have a CUDA compatible NVIDIA GPU with [compute capability](https://developer.nvidia.com/cuda-gpus#compute) 6.0 or higher
-2. Install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
-3. Pull and run the RStudio Rocker container
+1.  Have a CUDA compatible NVIDIA GPU with [compute capability](https://developer.nvidia.com/cuda-gpus#compute) 6.0 or higher
+2.  Install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+3.  Pull and run the RStudio Rocker container
 
 ```{bash}
 docker pull rocker/rstudio
 docker run --gpus=all -d -t -e PASSWORD=rstudio -p 8787:8787 --name rstudio rocker/rstudio
 ```
 
-4. Open RStudio Server from your browser by opening `http://<your.ip.address>:8787/`. Make sure port 8787 is open. Your username is `rstudio` and your password is `rstudio`.
-5. Configure RStudio Server to download package binaries from the [Posit Package Manager](https://packagemanager.rstudio.com/client/#/)
+4.  Open RStudio Server from your browser by opening `http://<your.ip.address>:8787/`. Make sure port 8787 is open. Your username is `rstudio` and your password is `rstudio`.
+5.  Configure RStudio Server to download package binaries from the [Posit Package Manager](https://packagemanager.rstudio.com/client/#/)
 
-```
+```         
 # For Red Hat 8 use:
 https://packagemanager.rstudio.com/cran/__linux__/centos8/latest
 
 # For Ubuntu 20.04 use:
 https://packagemanager.rstudio.com/cran/__linux__/focal/latest
 ```
-6. Install `torch` from the pre-built binaries (Warning! This download is 2Gb)
+
+6.  Install `torch` from the pre-built binaries (Warning! This download is 2Gb)
 
 ```{r}
 options(timeout = 600)
 install.packages("torch", repos = "https://storage.googleapis.com/torch-lantern-builds/packages/cu117/0.10.0/")
 ```
 
-7. Make sure your CUDA device is available (this should return `TRUE`)
+7.  Make sure your CUDA device is available (this should return `TRUE`)
 
 ```{r}
 library(torch)
 cuda_is_available()
 ```
 
-8. Clone this repos and make sure the working directory is `torch-workshop`
-9. Download `Tiny ImageNet` data
+8.  Clone this repos and make sure the working directory is `torch-workshop`
+9.  Download `Tiny ImageNet` data
 
 ```{bash}
 wget http://cs231n.stanford.edu/tiny-imagenet-200.zip
@@ -156,7 +155,7 @@ There's a vibrant community of developers
 
 The `torch for R` ecosystem also includes R packages: `torchvision` , `torchaudio`, and `luz`.
 
-## 3. Tensors [Exercise]
+## 3. Tensors \[Exercise\]
 
 **What's in a tensor?**
 
@@ -166,14 +165,11 @@ In fact, a `torch` `tensor` is like an R `array`, in that it can be of arbitrary
 
 **Topics:**
 
-1. Creating tensors
-2. Operations on tensors\index{tensors!operations on}
-3. Accessing parts of a tensor\index{tensors!index into} \index{tensors!slice}
-4. Reshaping tensors\index{tensors!reshape}
-5. Broadcasting\index{tensors!broadcasting}
-
-
-
+1.  Creating tensors
+2.  Operations on tensors\index{tensors!operations on}
+3.  Accessing parts of a tensor\index{tensors!index into} \index{tensors!slice}
+4.  Reshaping tensors\index{tensors!reshape}
+5.  Broadcasting\index{tensors!broadcasting}
 
 ## 4. Autograd
 
@@ -216,9 +212,12 @@ x6 <- x4 * 0.2
 x7 <- x5 + x6 - 5
 x7
 ```
-    torch_tensor
-    -3.4000
-    [ CPUFloatType{1} ][ grad_fn = <SubBackward1> ]
+
+```         
+torch_tensor
+-3.4000
+[ CPUFloatType{1} ][ grad_fn = <SubBackward1> ]
+```
 
 ```{r}
 x7$backward()
@@ -227,15 +226,15 @@ x1$grad
 x2$grad
 ```
 
-     0.8000
-    [ CPUFloatType{1} ]
-    torch_tensor
-     0.8000
-    [ CPUFloatType{1} ]
+```         
+ 0.8000
+[ CPUFloatType{1} ]
+torch_tensor
+ 0.8000
+[ CPUFloatType{1} ]
+```
 
 These are the partial derivatives of `x7` with respect to `x1` and `x2`, respectively. Conforming to our manual calculations above, both amount to 0.8, that is, 0.4 times the tensor values 2 and 2.
-
-
 
 ## 5. Function minimization with *autograd* {#sec:optim-1}
 
@@ -254,8 +253,8 @@ rosenbrock <- function(x) {
 }
 ```
 
-* `lr`, for learning rate, is the fraction of the gradient to subtract on every step
-* `num_iterations` is the number of steps to take.
+-   `lr`, for learning rate, is the fraction of the gradient to subtract on every step
+-   `num_iterations` is the number of steps to take.
 
 ```{r}
 library(torch)
@@ -286,33 +285,35 @@ for (i in 1:num_iterations) {
 }
 ```
 
-    Iteration:  400 
-    Value is:  0.009619333 
-    Gradient is:  -0.04347242 -0.08254051 
+```         
+Iteration:  400 
+Value is:  0.009619333 
+Gradient is:  -0.04347242 -0.08254051 
 
-    Iteration:  500 
-    Value is:  0.003990697 
-    Gradient is:  -0.02652063 -0.05206227 
+Iteration:  500 
+Value is:  0.003990697 
+Gradient is:  -0.02652063 -0.05206227 
 
-    Iteration:  600 
-    Value is:  0.001719962 
-    Gradient is:  -0.01683905 -0.03373682 
+Iteration:  600 
+Value is:  0.001719962 
+Gradient is:  -0.01683905 -0.03373682 
 
-    Iteration:  700 
-    Value is:  0.0007584976 
-    Gradient is:  -0.01095017 -0.02221584 
+Iteration:  700 
+Value is:  0.0007584976 
+Gradient is:  -0.01095017 -0.02221584 
 
-    Iteration:  800 
-    Value is:  0.0003393509 
-    Gradient is:  -0.007221781 -0.01477957
+Iteration:  800 
+Value is:  0.0003393509 
+Gradient is:  -0.007221781 -0.01477957
 
-    Iteration:  900 
-    Value is:  0.0001532408 
-    Gradient is:  -0.004811743 -0.009894371 
+Iteration:  900 
+Value is:  0.0001532408 
+Gradient is:  -0.004811743 -0.009894371 
 
-    Iteration:  1000 
-    Value is:  6.962555e-05 
-    Gradient is:  -0.003222887 -0.006653666 
+Iteration:  1000 
+Value is:  6.962555e-05 
+Gradient is:  -0.003222887 -0.006653666 
+```
 
 After thousand iterations, we have reached a function value lower than 0.0001. What is the corresponding `(x1,x2)`-position?
 
@@ -320,17 +321,18 @@ After thousand iterations, we have reached a function value lower than 0.0001. W
 x
 ```
 
-    torch_tensor
-     0.9918
-     0.9830
-    [ CPUFloatType{2} ]
+```         
+torch_tensor
+ 0.9918
+ 0.9830
+[ CPUFloatType{2} ]
+```
 
 This is rather close to the true minimum of `(1,1)`.
 
 ![](images/1x1.png)
 
-
-## 6. A neural network from scratch [Exercise]
+## 6. A neural network from scratch \[Exercise\]
 
 Understanding the basics will be an efficient antidote against the surprisingly common temptation to think of deep learning as some kind of "magic". It's all just matrix computations; one has to learn how to orchestrate them though.
 
@@ -354,19 +356,21 @@ y <- x$matmul(w) + b
 print(y, n = 10)
 ```
 
-    torch_tensor
-    -2.1600
-    -3.3244
-     0.6046
-     0.4472
-    -0.4971
-    -0.0530
-     5.1259
-    -1.1595
-    -0.5960
-    -1.4584
-    ... [the output was truncated (use n=-1 to disable)]
-    [ CPUFloatType{100,1} ][ grad_fn = <AddBackward0> ]
+```         
+torch_tensor
+-2.1600
+-3.3244
+ 0.6046
+ 0.4472
+-0.4971
+-0.0530
+ 5.1259
+-1.1595
+-0.5960
+-1.4584
+... [the output was truncated (use n=-1 to disable)]
+[ CPUFloatType{100,1} ][ grad_fn = <AddBackward0> ]
+```
 
 **Layers**
 
@@ -377,7 +381,7 @@ $$
 g \circ f
 $$
 
-One of the defining features of neural networks is their ability to chain an unlimited (in theory) number of layers. 
+One of the defining features of neural networks is their ability to chain an unlimited (in theory) number of layers.
 
 All but the output layer may be referred to as "hidden" layers, although from the point of view of someone who uses a deep learning framework such as `torch`, they are not that *hidden* after all.
 
@@ -392,11 +396,11 @@ b2 <- torch_randn(1, 1, requires_grad = TRUE)
 ```
 
 $$
-\begin{align}
+\begin{aligned}
 f(\mathbf{X}) & = (\mathbf{X} \mathbf{W}_1)\mathbf{W}_2 \\
 & = \mathbf{X} (\mathbf{W}_1\mathbf{W}_2) \\
 & = \mathbf{X} \mathbf{W}_3
-\end{align}
+\end{aligned}
 $$
 
 **Activation functions**
@@ -408,12 +412,14 @@ t <- torch_tensor(c(-2, 1, 5, -7))
 t$relu()
 ```
 
-    torch_tensor
-     0
-     1
-     5
-     0
-    [ CPUFloatType{4} ]
+```         
+torch_tensor
+ 0
+ 1
+ 5
+ 0
+[ CPUFloatType{4} ]
+```
 
 **Loss functions**
 
@@ -428,21 +434,18 @@ loss <- (y_pred - y)$pow(2)$mean()
 loss
 ```
 
-    torch_tensor
-    9.99999e-05
-    [ CPUFloatType{} ]
-
+```         
+torch_tensor
+9.99999e-05
+[ CPUFloatType{} ]
+```
 
 **Example**
 
 -   do a forward pass\index{forward pass}, yielding the network's predictions (if you dislike the one-liner, feel free to split it up);
-
 -   compute the loss (this, too, being a one-liner -- we merely added some logging);
-
 -   have *autograd* calculate the gradient of the loss with respect to the parameters; and
-
 -   update the parameters accordingly (again, taking care to wrap the whole action in `with_no_grad()`, and zeroing the `grad` fields on every iteration).
-
 
 **Generate random data**
 
@@ -521,27 +524,28 @@ for (t in 1:200) {
 }
 ```
 
-    Epoch: 10 Loss: 24.92771
-    Epoch: 20 Loss: 23.56143
-    Epoch: 30 Loss: 22.3069
-    Epoch: 40 Loss: 21.14102
-    Epoch: 50 Loss: 20.05027
-    Epoch: 60 Loss: 19.02925
-    Epoch: 70 Loss: 18.07328
-    Epoch: 80 Loss: 17.16819
-    Epoch: 90 Loss: 16.31367
-    Epoch: 100 Loss: 15.51261
-    Epoch: 110 Loss: 14.76012
-    Epoch: 120 Loss: 14.05348
-    Epoch: 130 Loss: 13.38944
-    Epoch: 140 Loss: 12.77219
-    Epoch: 150 Loss: 12.19302
-    Epoch: 160 Loss: 11.64823
-    Epoch: 170 Loss: 11.13535
-    Epoch: 180 Loss: 10.65219
-    Epoch: 190 Loss: 10.19666
-    Epoch: 200 Loss: 9.766989
-
+```         
+Epoch: 10 Loss: 24.92771
+Epoch: 20 Loss: 23.56143
+Epoch: 30 Loss: 22.3069
+Epoch: 40 Loss: 21.14102
+Epoch: 50 Loss: 20.05027
+Epoch: 60 Loss: 19.02925
+Epoch: 70 Loss: 18.07328
+Epoch: 80 Loss: 17.16819
+Epoch: 90 Loss: 16.31367
+Epoch: 100 Loss: 15.51261
+Epoch: 110 Loss: 14.76012
+Epoch: 120 Loss: 14.05348
+Epoch: 130 Loss: 13.38944
+Epoch: 140 Loss: 12.77219
+Epoch: 150 Loss: 12.19302
+Epoch: 160 Loss: 11.64823
+Epoch: 170 Loss: 11.13535
+Epoch: 180 Loss: 10.65219
+Epoch: 190 Loss: 10.19666
+Epoch: 200 Loss: 9.766989
+```
 
 ## 7. Modules {#sec:modules}
 
@@ -557,56 +561,62 @@ l <- nn_linear(in_features = 5, out_features = 16)
 l
 ```
 
-    An `nn_module` containing 96 parameters.
-    Parameters
-     weight: Float [1:16, 1:5]
-     bias: Float [1:16]
+```         
+An `nn_module` containing 96 parameters.
+Parameters
+ weight: Float [1:16, 1:5]
+ bias: Float [1:16]
+```
 
 ```{r}
 l$weight
 ```
 
-    torch_tensor
-    -0.2079 -0.1920  0.2926  0.0036 -0.0897
-     0.3658  0.0076 -0.0671  0.3981 -0.4215
-     0.2568  0.3648 -0.0374 -0.2778 -0.1662
-     0.4444  0.3851 -0.1225  0.1678 -0.3443
-    -0.3998  0.0207 -0.0767  0.4323  0.1653
-     0.3997  0.0647 -0.2823 -0.1639 -0.0225
-     0.0479  0.0207 -0.3426 -0.1567  0.2830
-     0.0925 -0.4324  0.0448 -0.0039  0.1531
-    -0.2924 -0.0009 -0.1841  0.2028  0.1586
-    -0.3064 -0.4006 -0.0553 -0.0067  0.2575
-    -0.0472  0.1238 -0.3583  0.4426 -0.0269
-    -0.0275 -0.0295 -0.2687  0.2236  0.3787
-    -0.2617 -0.2221  0.1503 -0.0627  0.1094
-     0.0122  0.2041  0.4466  0.4112  0.4168
-    -0.4362 -0.3390  0.3679 -0.3045  0.1358
-     0.2979  0.0023  0.0695 -0.1906 -0.1526
-    [ CPUFloatType{16,5} ]
+```         
+torch_tensor
+-0.2079 -0.1920  0.2926  0.0036 -0.0897
+ 0.3658  0.0076 -0.0671  0.3981 -0.4215
+ 0.2568  0.3648 -0.0374 -0.2778 -0.1662
+ 0.4444  0.3851 -0.1225  0.1678 -0.3443
+-0.3998  0.0207 -0.0767  0.4323  0.1653
+ 0.3997  0.0647 -0.2823 -0.1639 -0.0225
+ 0.0479  0.0207 -0.3426 -0.1567  0.2830
+ 0.0925 -0.4324  0.0448 -0.0039  0.1531
+-0.2924 -0.0009 -0.1841  0.2028  0.1586
+-0.3064 -0.4006 -0.0553 -0.0067  0.2575
+-0.0472  0.1238 -0.3583  0.4426 -0.0269
+-0.0275 -0.0295 -0.2687  0.2236  0.3787
+-0.2617 -0.2221  0.1503 -0.0627  0.1094
+ 0.0122  0.2041  0.4466  0.4112  0.4168
+-0.4362 -0.3390  0.3679 -0.3045  0.1358
+ 0.2979  0.0023  0.0695 -0.1906 -0.1526
+[ CPUFloatType{16,5} ]
+```
 
 ```{r}
 l$bias
 ```
 
-    torch_tensor
-    -0.2314
-     0.2942
-     0.0567
-    -0.1728
-    -0.3220
-    -0.1553
-    -0.4149
-    -0.2103
-    -0.1769
-     0.4219
-    -0.3368
-     0.0689
-     0.3625
-    -0.1391
-    -0.1411
-    -0.2014
-    [ CPUFloatType{16} ]
+```         
+torch_tensor
+-0.2314
+ 0.2942
+ 0.0567
+-0.1728
+-0.3220
+-0.1553
+-0.4149
+-0.2103
+-0.1769
+ 0.4219
+-0.3368
+ 0.0689
+ 0.3625
+-0.1391
+-0.1411
+-0.2014
+[ CPUFloatType{16} ]
+```
 
 ```{r}
 x <- torch_randn(50, 5)
@@ -614,8 +624,9 @@ output <- l(x)
 output$size() # foward pass
 ```
 
-    [1] 50 16
-
+```         
+[1] 50 16
+```
 
 **`nn_sequential()`**
 
@@ -695,18 +706,16 @@ optimizer$step()
 
 Without optimizers
 
-* Stochastic gradient descent (baseline)
+-   Stochastic gradient descent (baseline)
 
 With optimizers
 
-* Gradient descent (with momentum)
-* Adagrad (adaptive learning rate)
-* RMSProp (adapative learning rate)
-* Adam (adapative learning rate and momentum)
+-   Gradient descent (with momentum)
+-   Adagrad (adaptive learning rate)
+-   RMSProp (adapative learning rate)
+-   Adam (adapative learning rate and momentum)
 
 ![](images/1x1.png)
-
-
 
 ## 9. Loss functions
 
@@ -723,13 +732,13 @@ In `torch`, loss functions start with `nn_` or `nnf_`.
 nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
 ```
 
-    torch_tensor
-    0.81
-    [ CPUFloatType{} ]
-
+```         
+torch_tensor
+0.81
+[ CPUFloatType{} ]
+```
 
 **What loss function should I choose?**
-
 
 |        |          |             |            |               |           |
 |--------|----------|-------------|------------|---------------|-----------|
@@ -740,15 +749,12 @@ nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
 | *BCe*  | Y        |             |            | Y             |           |
 | *Nll*  |          | Y           |            |               | Y         |
 
-
 |        |                                          |
 |--------|------------------------------------------|
 | *BCeL* | `nnf_binary_cross_entropy_with_logits()` |
 | *Ce*   | `nnf_cross_entropy()`                    |
 | *BCe*  | `nnf_binary_cross_entropy()`             |
 | *Nll*  | `nnf_nll_loss()`                         |
-
-
 
 ## 10. Function minimization with L-BFGS
 
@@ -762,19 +768,15 @@ Among approximate Newton methods, probably the most-used is the Broyden-Goldfarb
 
 With line search, we spend some time evaluating how far to follow the descent direction. There are two principal ways of doing this.
 
-1. Exact. Take the current point, compute the descent direction, and hard-code them as givens in a *second* function that depends on the learning rate only. Then, differentiate this function to find *its* minimum. The solution will be the learning rate that optimizes the step length taken.
-2. Approximate search. Essentially, we look for something that is *just* *good enough*. Among the most established heuristics are the *Strong Wolfe conditions*, and this is the strategy implemented in `torch`'s `optim_lbfgs()`.
+1.  Exact. Take the current point, compute the descent direction, and hard-code them as givens in a *second* function that depends on the learning rate only. Then, differentiate this function to find *its* minimum. The solution will be the learning rate that optimizes the step length taken.
+2.  Approximate search. Essentially, we look for something that is *just* *good enough*. Among the most established heuristics are the *Strong Wolfe conditions*, and this is the strategy implemented in `torch`'s `optim_lbfgs()`.
 
-## 11. Modularizing the neural network [Exercise]
+## 11. Modularizing the neural network \[Exercise\]
 
 -   The forward pass, instead of calling functions on tensors, will call the model.
-
 -   In computing the loss, we now make use of `torch`'s `nnf_mse_loss()`.
-
 -   Backpropagation of gradients is, in fact, the only operation that remains unchanged.
-
 -   Weight updating is taken care of by the optimizer.
-
 
 **Training**
 
@@ -804,9 +806,6 @@ for (t in 1:200) {
 }
 ```
 
-
-
-
 # Deep learning with torch
 
 ## 12. Overview
@@ -821,8 +820,6 @@ Regarding workflow, we'll see how to:
 -   making models generalize beyond the training data;
 -   speed up training;
 -   and more.
-
-
 
 ## 13. Loading data
 
@@ -871,18 +868,20 @@ penguins_dataset <- dataset(
 ds[1]
 ```
 
-    $x
-    torch_tensor
-       39.1000
-       18.7000
-      181.0000
-     3750.0000
-    [ CPUFloatType{4} ]
+```         
+$x
+torch_tensor
+   39.1000
+   18.7000
+  181.0000
+ 3750.0000
+[ CPUFloatType{4} ]
 
-    $y
-    torch_tensor
-    1
-    [ CPULongType{} ]
+$y
+torch_tensor
+1
+[ CPULongType{} ]
+```
 
 **Using `tensor_dataset()`**
 
@@ -895,7 +894,6 @@ ds <- tensor_dataset(
   )$to(torch_long())
 )
 ```
-
 
 **Using `dataloader()`**
 
@@ -911,18 +909,18 @@ dim(first_batch$x)
 dim(first_batch$y)
 ```
 
-    [1] 32  1 28 28
-    [1] 32
+```         
+[1] 32  1 28 28
+[1] 32
+```
 
-
-
-## 14. Training with luz [Exercise]
+## 14. Training with luz \[Exercise\]
 
 `luz` was designed to make deep learning with `torch` as effortless as possible. `luz` helps manage:
 
-* Training, validation, and testing
-* Customization flexibility with callbacks
-* Data flow between *devices* (CPU and GPU, if you have one).
+-   Training, validation, and testing
+-   Customization flexibility with callbacks
+-   Data flow between *devices* (CPU and GPU, if you have one).
 
 ```{r}
 fitted <- net %>%
@@ -954,25 +952,21 @@ How `luz` helps with devices. For the call to `predict()`, what happened "under 
 -   `luz` moved the test data to the GPU, batch by batch, and obtained model predictions.
 -   These predictions were then moved back to the CPU, in anticipation of the caller wanting to process them further with R.
 
+## 15. A first go at image classification \[Exercise\]
 
-
-
-## 15. A first go at image classification [Exercise]
-
-This chapter is about “convolutional” neural networks; the specialized module in question is the “convolutional” one. In this chapter, we design and train a basic convnet from scratch. This is “just” a beginning.
+This chapter is about "convolutional" neural networks; the specialized module in question is the "convolutional" one. In this chapter, we design and train a basic convnet from scratch. This is "just" a beginning.
 
 ![](images/images-feature-visualization.png)
 
-
 **Glossary of terms**
 
-* Convolution / Cross-correlation: Which finds things, or spots similarities.
-* Filter / kernel: Maps non-linear data into a higher-dimensional space without the need to visit or understand that higher-dimensional space.
-  * Padding: Allows the kernel to extend outside the valid region.
-  * Stride: The way a kernel moves over the image.
-  * Dilation: Spreads out the pixels in a convolution.
-* Translation invariant: If a shift has occurred, the target is still detected, but at a new location.
-* Pooling: Down sample feature maps by summarizing the presence of features in patches of the feature map.
+-   Convolution / Cross-correlation: Which finds things, or spots similarities.
+-   Filter / kernel: Maps non-linear data into a higher-dimensional space without the need to visit or understand that higher-dimensional space.
+    -   Padding: Allows the kernel to extend outside the valid region.
+    -   Stride: The way a kernel moves over the image.
+    -   Dilation: Spreads out the pixels in a convolution.
+-   Translation invariant: If a shift has occurred, the target is still detected, but at a new location.
+-   Pooling: Down sample feature maps by summarizing the presence of features in patches of the feature map.
 
 **New Package**
 
@@ -1005,7 +999,6 @@ valid_ds <- tiny_imagenet_dataset(
       transform_to_tensor()
   }
 )
-
 ```
 
 **Dataloader**
@@ -1022,9 +1015,7 @@ batch <- train_dl %>%
   dataloader_next()
 ```
 
-
 **Convolutional Neural Network (CNN or convnet)**
-
 
 ```{r}
 convnet <- nn_module(
@@ -1109,7 +1100,7 @@ torch_argmax(preds, dim = 2)
 
 **Dropout**
 
-At each forward pass, individual activations – single values in the tensors being passed on – are dropped (meaning: set to zero), with configurable probability. Put differently: Dynamically and reversibly, individual inter-neuron connections are “cut off”. 
+At each forward pass, individual activations -- single values in the tensors being passed on -- are dropped (meaning: set to zero), with configurable probability. Put differently: Dynamically and reversibly, individual inter-neuron connections are "cut off".
 
 **Regularization**
 
@@ -1117,15 +1108,12 @@ The idea is to keep the weights small and homogeneous, to prevent sharp cliffs a
 
 **Early stopping**
 
-In deep learning, early stopping is ubiquitous; it’s hard to imagine why one would not want to use it.
-
+In deep learning, early stopping is ubiquitous; it's hard to imagine why one would not want to use it.
 
 ## 17. Speeding up training
 
 1.  Batch normalization. *Batchnorm* -- to introduce a popular abbreviation -- layers are added to a model to stabilize and, in consequence, speed up training.
-
 2.  Determining a good learning rate upfront, and dynamically varying it during training. As you might remember from our experiments with optimization, the learning rate has an enormous impact on training speed and stability.
-
 3.  Transfer learning. Applied to neural networks, the term commonly refers to using pre-trained models for feature detection, and making use of those features in a downstream task.
 
 ![](images/efficiency-mnist-lr-finder.png)
@@ -1135,19 +1123,14 @@ In deep learning, early stopping is ubiquitous; it’s hard to imagine why one w
 **Always use**
 
 -   Data augmentation. There is hardly ever a case where you'd *not* want to use it -- unless, of course, you are already using a different data augmentation technique.
-
 -   Learning rate finder with a learning rate schedule.
-
 -   Early stopping. This will not just prevent overfitting, but also, save time.
 
 **Exercises (slow)**
 
 -   First training: Take the convnet from three chapters ago, and add dropout layers.
-
 -   Second training: Replace dropout by batch normalization. (Everything else stays the same.)
-
 -   Third training: Replace the model completely, by one chaining a pre-trained feature classifier (ResNet) and a small sequential model.
-
 
 # Appendix
 
@@ -1166,6 +1149,6 @@ In deep learning, early stopping is ubiquitous; it’s hard to imagine why one w
 
 ## Thank you
 
-* Nathan Stephens
-* nstephens@nvidia.com
-* [torch-workshop](https://github.com/nwstephens/torch-workshop.git)
+-   Nathan Stephens
+-   nstephens\@nvidia.com
+-   [torch-workshop](https://github.com/nwstephens/torch-workshop.git)
