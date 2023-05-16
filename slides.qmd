@@ -20,7 +20,7 @@ echo: true
 * Experience building data science teams, architecting analytic infrastructure, and operationalizing data products. 
 * Worked at RStudio, oversaw the solutions engineering team.
 * Longtime advocate for operationalizing data science using open-source software.
-* Recently relocated to Peoria, AZ.
+* Relocated to Peoria, AZ in 2020.
 
 
 ## Deep Learning and Scientific Computing With R Torch
@@ -42,8 +42,13 @@ This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this wr
 
 **Covering first two sections:**
 
-* Getting familiar with torch (chapters 1-11)
-* Deep learning with torch (up to chapter 18)
+* Getting familiar with torch
+  * Torch mechanics: `3`, 4, 9
+  * What can we do? 5, `6`, 10
+  * Abstraction: 7, 8, `11`
+* Deep learning with torch
+  * Basic image classification: 13, `14`, `15`
+  * Opitmized image classification: 16, 17, 18
 
 **Reproducing Chapters:**
 
@@ -136,7 +141,7 @@ wget http://cs231n.stanford.edu/tiny-imagenet-200.zip
 unzip tiny-imagenet-200.zip
 ```
 
-10. Install the `modeldata` package from the `2021-06-08` snapshot
+`10.` Install the `modeldata` package from the `2021-06-08` snapshot
 
 ```{r}
 install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/__linux__/bionic/2021-06-08")
@@ -148,15 +153,13 @@ install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/_
 
 `torch` is an R port of PyTorch, one of the two (as of this writing) most-employed deep learning frameworks in industry and research. By its design, it is also an excellent tool to use in various types of scientific computation tasks (a subset of which you'll encounter in the book's final part). It is written entirely in R and C++ (including a bit of C). No Python installation is required to use it.
 
-On the Python (PyTorch) side, the ecosystem appears as a set of concentric cycles. In the middle, there's PyTorch\index{PyTorch} itself, the core library without which nothing could work. Surrounding it, we have the inner circle of what could be called framework libraries, dedicated to special types of data (images, sound, text ...), or centered on workflow tasks, like deployment. Then, there is the broader ecosystem of add-ons, specializations, and libraries for whom PyTorch is a building block, or a tool.
+There's a vibrant community of developers, of diverse origin and with diverse goals, working to further develop and extend `torch`, so it can help more and more people accomplish their various tasks. 
 
-On the R side, we have the same "heart" -- all depends on core `torch` -- and we do have the same types of libraries; but the categories, the "circles", appear less clearly set off from each other. There are no strict boundaries. There's just a vibrant community of developers, of diverse origin and with diverse goals, working to further develop and extend `torch`, so it can help more and more people accomplish their various tasks. The ecosystem growing so quickly, I'll refrain from naming individual packages -- at any time, visit [the `torch` website](https://torch.mlverse.org/packages/) to see a featured subset.
+There are three packages used in the book: `torchvision` , `torchaudio`, and `luz`.
 
-There are three packages, though, that I *will* name here, since they are used in the book: `torchvision` , `torchaudio`, and `luz`. The former two bundle domain-specific transformations, deep learning models, datasets, and utilities for images (incl. video) and audio data, respectively. The third is a high-level, intuitive, nice-to-use interface to `torch`, allowing to define, train, and evaluate a neural network in just a few lines of code. Like `torch` itself, all three packages can be installed from CRAN.
+## 3. Tensors [Exercise]
 
-## 3. Tensors
-
-### What's in a tensor?
+**What's in a tensor?**
 
 To do anything useful with `torch`, you need to know about tensors. Not tensors in the math/physics sense. In deep learning frameworks such as TensorFlow and (Py-)Torch, *tensors* are "just" multi-dimensional arrays optimized for fast computation -- not on the CPU only but also, on specialized devices such as GPUs and TPUs.
 
@@ -181,7 +184,7 @@ Frameworks like `torch` are so popular because of what you can do with them: dee
 
 In torch, the AD engine is usually referred to as autograd.
 
-### Automatic differentiation example
+**Automatic differentiation example**
 
 Quadratic function of two variables: $f(x_1, x_2) = 0.2 {x_1}^2 + 0.2 {x_2}^2 - 5$. It has its minimum at `(0,0)`.
 
@@ -197,7 +200,7 @@ Quadratic function of two variables: $f(x_1, x_2) = 0.2 {x_1}^2 + 0.2 {x_2}^2 - 
 
 -   Analogously, we determine the second partial derivative, and thus, already have the gradient available: $\nabla f = \frac{\partial f}{\partial x_1} + \frac{\partial f}{\partial x_2} = 0.4 x_1 + 0.4 x_2$.
 
-### Automatic differentiation with `torch` *autograd*
+**Automatic differentiation with `torch` autograd**
 
 ```{r}
 library(torch)
@@ -340,47 +343,27 @@ This is rather close to the true minimum of `(1,1)`.
 ![](images/optim-rosenbrock.png)
 
 
-## 6. A neural network from scratch {#sec:network-1}
+## 6. A neural network from scratch [Exercise]
 
-In this chapter, we are going to solve a regression\index{regression} task. But wait -- not the `lm` way. We'll be building a real neural network, making use of tensors only (`autograd`-enabled ones, it goes without saying). Of course, this is not how you'll be using `torch`, later; but this does not make it a useless endeavor. On the contrary. Having seen the raw mechanics, you'll be able to appreciate even more the hard work that `torch` saves you. What's more, understanding the basics will be an efficient antidote against the surprisingly common temptation to think of deep learning as some kind of "magic". It's all just matrix computations; one has to learn how to orchestrate them though.
+Understanding the basics will be an efficient antidote against the surprisingly common temptation to think of deep learning as some kind of "magic". It's all just matrix computations; one has to learn how to orchestrate them though.
 
-Let's start with what we need for a network that can perform regression.
+**Multiple Linear Regression**
 
-### Idea
-
-In a nutshell, a network is a *function* from inputs to outputs. A suitable function, thus, is what we're looking for.
-
-To find it, let's first think of regression as *linear* regression. What linear regression does is multiply and add. For each independent variable, there is a *coefficient* that multiplies it. On top of that, there is a so-called *bias* term that gets added at the end. (In two dimensions, regression coefficient and bias correspond to slope and x-intercept of the regression line.)
-
-Thinking about it, multiplication and addition are things we can do with tensors -- one could even say they are made for exactly that. Let's take an example where the input data consist of a hundred observations, with three features each. For example:
+$$
+f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
+$$
 
 ```{r}
 library(torch)
 
 x <- torch_randn(100, 3)
-x$size()
-```
 
-    [1] 100   3
-
-To store the per-feature coefficients that should multiply `x`, we need a column vector of length 3, the number of features. Alternatively, preparing for a modification we're going to make very soon, this can be a matrix whose columns are of length three, that is, a matrix with three rows. How many columns should it have? Let's say we want to predict a single output feature. In that case, the matrix should be of size 3 x 1.
-
-Here comes a suitable candidate, initialized randomly. Note how the tensor is created with `requires_grad = TRUE`, as it represents a parameter we'll want the network to *learn*.
-
-```{r}
 w <- torch_randn(3, 1, requires_grad = TRUE)
-```
 
-The bias tensor then has to be of size 1 x 1:
-
-```{r}
 b <- torch_zeros(1, 1, requires_grad = TRUE)
-```
 
-Now, we can get a "prediction" by multiplying the data with the weight\index{weight} matrix `w` and adding the bias\index{bias} `b`:
-
-```{r}
 y <- x$matmul(w) + b
+
 print(y, n = 10)
 ```
 
@@ -398,53 +381,40 @@ print(y, n = 10)
     ... [the output was truncated (use n=-1 to disable)]
     [ CPUFloatType{100,1} ][ grad_fn = <AddBackward0> ]
 
-In math notation, what we've done here is implement the function:
+**Layers**
 
 $$
-f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
+g(f(\mathbf{X}))
+$$
+$$
+g \circ f
 $$
 
-How does this relate to neural networks?
+One of the defining features of neural networks is their ability to chain an unlimited (in theory) number of layers. 
 
-### Layers
-
-Circling back to neural-network terminology, what we've done here is prototype the action of a network that has a *single* *layer*\index{layer}: the output layer. However, a single-layer network is hardly the type you'd be interested in building -- why would you, when you could simply do linear regression instead? In fact, one of the defining features of neural networks is their ability to chain an unlimited (in theory) number of layers. Of these, all but the output\index{layer!output} layer may be referred to as "hidden" layers, although from the point of view of someone who uses a deep learning framework such as `torch`, they are not that *hidden* after all.
-
-Let's say we want our network to have one hidden layer\index{layer!hidden}. Its size, meaning, the number of *units* it has, will be an important factor in determining the network's power. This number is reflected in the weight matrix we create: A layer with eight units will need a weight matrix with eight columns.
+All but the output layer may be referred to as "hidden" layers, although from the point of view of someone who uses a deep learning framework such as `torch`, they are not that *hidden* after all.
 
 ```{r}
+# Hidden Layer
 w1 <- torch_randn(3, 8, requires_grad = TRUE)
-```
-
-Each unit has its own value for bias, too.
-
-```{r}
 b1 <- torch_zeros(1, 8, requires_grad = TRUE)
-```
 
-Just like we saw before, the hidden layer will multiply the input it receives by the weights and add the bias. That is, it applies the function $f$ displayed above. Then, another function is applied. This function receives its input from the hidden layer and produces the final output. In a nutshell, what is happening here is function composition: Calling the second function $g$, the overall transformation is $g(f(\mathbf{X})$, or $g \circ f$.
-
-For $g$ to yield an output analogous to the single-layer architecture above, its weight matrix has to take the eight-column hidden layer to a single column. That is, `w2` looks like this:
-
-```{r}
+# Output Layer
 w2 <- torch_randn(8, 1, requires_grad = TRUE)
-```
-
-The bias, `b2`, is a single value, like `b1`:
-
-```{r}
 b2 <- torch_randn(1, 1, requires_grad = TRUE)
 ```
 
-Of course, there is no reason to stop at *one* hidden layer, and once we've built up the complete apparatus, please feel invited to experiment with the code. But first, we need to add in a few other types of components. For one, with our most recent architecture, what we're doing is chain, or compose, functions -- which is good. But all these functions are doing is add and multiply, implying that they are linear. The power of neural networks, however, is usually associated with *nonlinearity*\index{nonlinearity}. Why?
+**Activation functions**
 
-### Activation functions\index{activation function}
+$$
+\begin{align}
+f(\mathbf{X}) & = ((\mathbf{X} \mathbf{W}_1)\mathbf{W}_2)\mathbf{W}_3 \\
+& = \mathbf{X} (\mathbf{W}_1\mathbf{W}_2\mathbf{W}_3) \\
+& = \mathbf{X} \mathbf{W}_4
+\end{align}
+$$
 
-Imagine, for a moment, that we had a network with three layers, and all each layer did was multiply its input by its weight matrix. (Having a bias term doesn't really change anything. But it makes the example more complex, so we're "abstracting it out".)
-
-This gives us a chain of matrix multiplications: $f(\mathbf{X}) = ((\mathbf{X} \mathbf{W}_1)\mathbf{W}_2)\mathbf{W}_3$. Now, this can be rearranged so that all the weight matrices are multiplied together before application to $\mathbf{X}$: $f(\mathbf{X}) = \mathbf{X} (\mathbf{W}_1\mathbf{W}_2\mathbf{W}_3)$. Thus, this three-layer network can be simplified to a single-layer one, where $f(\mathbf{X}) = \mathbf{X} \mathbf{W}_4$. And now, we have lost all advantages associated with deep neural networks.
-
-This is where activation functions, sometimes called "nonlinearities", come in. They introduce non-linear operations that cannot be modeled by matrix multiplication. Historically, the prototypical activation function has been the *sigmoid*\index{activation!sigmoid}, and it's still extremely important today. Its constitutive action is to squish its input between zero and one, yielding a value that can be interpreted as a probability. But in regression, this is not usually what we want, and neither would it be for most hidden layers.
+We have lost all advantages associated with deep neural networks. This is where activation functions, sometimes called "nonlinearities", come in. They introduce non-linear operations that cannot be modeled by matrix multiplication. Historically, the prototypical activation function has been the *sigmoid*\index{activation!sigmoid}, and it's still extremely important today. Its constitutive action is to squish its input between zero and one, yielding a value that can be interpreted as a probability. But in regression, this is not usually what we want, and neither would it be for most hidden layers.
 
 Instead, the most-used activation function inside a network is the so-called *ReLU*\index{activation!ReLU}, or Rectified Linear Unit. This is a long name for something rather straightforward: All negative values are set to zero. In `torch`, this can be accomplished using the `relu()` function:
 
@@ -460,43 +430,9 @@ t$relu()
      0
     [ CPUFloatType{4} ]
 
-Why would this be nonlinear? One criterion for a linear function is that when you have two inputs, it doesn't matter if you first add them and then, apply the transformation, or if you start by applying the transformation independently to both inputs and then, go ahead and add them. But with ReLU, this does not work:
+**Loss functions**
 
-```{r}
-t1 <- torch_tensor(c(1, 2, 3))
-t2 <- torch_tensor(c(1, -2, 3))
-
-t1$add(t2)$relu()
-```
-
-    torch_tensor
-     2
-     0
-     6
-    [ CPUFloatType{3} ]
-
-```{r}
-t1_clamped <- t1$relu()
-t2_clamped <- t2$relu()
-
-t1_clamped$add(t2_clamped)
-```
-
-    torch_tensor
-     2
-     2
-     6
-    [ CPUFloatType{3} ]
-
-The results are not the same.
-
-Wrapping up so far, we've talked about how to code layers and activation functions. There is just one further concept to discuss before we can build the complete network. This is the loss function.
-
-### Loss functions
-
-Put abstractly, the loss is a measure of how far away we are from our goal. When minimizing a function, like we did in the previous chapter, this is the difference between the current function value and the smallest value it can take. With neural networks, we are free to choose a suitable loss function as we like, provided it matches our task. For regression-type tasks, this often will be mean squared error (MSE), although it doesn't have to be. For example, there could be reasons to use mean absolute error instead.
-
-In `torch`, computation of mean squared error is a one-liner:
+Loss is a measure of how far away we are from our goal. For regression-type tasks, this often will be mean squared error (MSE).
 
 ```{r}
 y <- torch_randn(5)
@@ -511,17 +447,19 @@ loss
     9.99999e-05
     [ CPUFloatType{} ]
 
-As soon as we have the loss, we'll be able to update the weights, subtracting a fraction of its gradient. We've already seen how to do this in the last chapter, and will see it again shortly.
 
-We now take the pieces discussed and put them together.
+**Example**
 
-### Implementation
+-   do a forward pass\index{forward pass}, yielding the network's predictions (if you dislike the one-liner, feel free to split it up);
 
-We split this into three parts. This way, when later we refactor individual components to make use of higher-level `torch` functionality, it will be easier to see the areas where encapsulation and modularization are occurring.
+-   compute the loss (this, too, being a one-liner -- we merely added some logging);
 
-#### Generate random data
+-   have *autograd* calculate the gradient of the loss with respect to the parameters; and
 
-Our example data consist of one hundred observations. The input, `x`, has three features; the target, `y`, just one. `y` is generated from `x`, but with some noise added.
+-   update the parameters accordingly (again, taking care to wrap the whole action in `with_no_grad()`, and zeroing the `grad` fields on every iteration).
+
+
+**Generate random data**
 
 ```{r}
 library(torch)
@@ -537,11 +475,7 @@ y <- x$matmul(coefs)$unsqueeze(2) + torch_randn(n, 1)
 
 ```
 
-Next, the network.
-
-#### Build the network\index{network}
-
-The network has two layers: a hidden layer and the output layer. This means that we need two weight matrices and two bias tensors. For no special reason, the hidden layer here has thirty-two units:
+**Build the network**
 
 ```{r}
 # dimensionality of hidden layer
@@ -560,23 +494,7 @@ b1 <- torch_zeros(1, d_hidden, requires_grad = TRUE)
 b2 <- torch_zeros(1, d_out, requires_grad = TRUE)
 ```
 
-With their current values -- results of random initialization -- those weights and biases won't be of much use. Time to train the network.
-
-#### Train the network
-
-Training the network means passing the input through its layers, calculating the loss, and adjusting the parameters\index{parameters} (weights and biases) in a way that predictions improve. These activities we keep repeating until performance seems sufficient (which, in real-life applications, would have to be defined very carefully). Technically, each repeated application of these steps is called an *epoch*\index{epoch}.
-
-Just like with function minimization, deciding on a suitable learning rate (the fraction of the gradient to subtract) needs some experimentation.
-
-Looking at the below training loop, you see that, logically, it consists of four parts:
-
--   do a forward pass\index{forward pass}, yielding the network's predictions (if you dislike the one-liner, feel free to split it up);
-
--   compute the loss (this, too, being a one-liner -- we merely added some logging);
-
--   have *autograd* calculate the gradient of the loss with respect to the parameters; and
-
--   update the parameters accordingly (again, taking care to wrap the whole action in `with_no_grad()`, and zeroing the `grad` fields on every iteration).
+**Train the network**
 
 ```{r}
 
@@ -643,38 +561,18 @@ for (t in 1:200) {
     Epoch: 190 Loss: 10.19666
     Epoch: 200 Loss: 9.766989
 
-The loss decreases quickly at first, and then, not so rapidly anymore. But this example was not created to exhibit magnificent performance; the idea was to show how few lines of code are needed to build a "real" neural network.
-
-Now, the layers, the loss, the parameter updates -- all that is still pretty "raw": It's (literally) *just tensors*. For such a small network this works fine, but it would get cumbersome pretty fast for more complex designs. The following two chapters, thus, will show how to abstract away weights and biases into neural network *modules*, swap self-made loss functions with built-in ones, and get rid of the verbose parameter update routine.
-
-
 
 ## 7. Modules {#sec:modules}
 
-In the last chapter, we built a neural network for a regression task. There were two distinct types of operations: linear and non-linear.
+In `torch`, a module can be of any complexity, ranging from basic *layers* -- like the `nn_linear()` we are going to introduce in a minute -- to complete *models* consisting of many such layers. Code-wise, there is no difference between "layers"\index{layer (terminology)} and "models"\index{model (terminology)}. This book, will mostly stay with the common terminology of layers and models.
 
-In the non-linear category, we had ReLU activation, expressed as a straightforward function call: `nnf_relu()`. Activation functions are *functions*: Given input $\mathbf{x}$, they return output $\mathbf{y}$ every time. In other words, they are deterministic. It's different with the linear part, though.
+**Built-in `nn_module()`**
 
-The linear part in the regression network was implemented as multiplication by a matrix -- the weight matrix -- and addition of a vector (the bias vector). With operations like that, results inevitably depend on the actual values stored in the respective tensors. Put differently, the operation is *stateful*.
-
-Whenever there is state involved, it helps to encapsulate it in an object, freeing the user from manual management. This is what `torch`'s *modules* do.
-
-Note that term, *modules*\index{module (terminology)}. In `torch`, a module can be of any complexity, ranging from basic *layers* -- like the `nn_linear()` we are going to introduce in a minute -- to complete *models* consisting of many such layers. Code-wise, there is no difference between "layers"\index{layer (terminology)} and "models"\index{model (terminology)}. This is why in some texts, you'll see "module" used throughout. In this book, I'll mostly stay with the common terminology of layers and models, as it maps more closely to how things appear conceptually.
-
-Back to the *why* of modules. In addition to encapsulation, there is another reason for providing layer objects: Not all often-used layers are as light-weight as `nn_linear()` is. We'll quickly mention a few others at the end of the next section, reserving a complete introduction to later chapters of this book.
-
-### Built-in `nn_module()`s
-
-In `torch`, a linear layer is created using `nn_linear()`. `nn_linear()` expects (at least) two arguments: `in_features` and `out_features`. Let's say your input data has fifty observations with five features each; that is, it is of size 50 x 5. You want to build a hidden layer with sixteen units. Then `in_features` is 5, and `out_features` is 16. (The same 5 and 16 would constitute the number of rows/columns in the weight matrix if you built one yourself.)
+In `torch`, a linear layer is created using `nn_linear()`. `nn_linear()` expects (at least) two arguments: `in_features` and `out_features`.
 
 ```{r}
 library(torch)
 l <- nn_linear(in_features = 5, out_features = 16)
-```
-
-Once created, the module readily informs you about its parameters:
-
-```{r}
 l
 ```
 
@@ -682,8 +580,6 @@ l
     Parameters
      weight: Float [1:16, 1:5]
      bias: Float [1:16]
-
-Encapsulation doesn't keep us from inspecting the weight and bias tensors:
 
 ```{r}
 l$weight
@@ -731,73 +627,18 @@ l$bias
     -0.2014
     [ CPUFloatType{16} ]
 
-At this point, I need to ask for your indulgence. You've probably noticed that `torch` reports the weight matrix as being of size 16 x 5, not 5 x 16, like we said you'd create it when coding from scratch. This is due to an implementation detail inherited from the underlying C++ implementation, `libtorch`. For performance reasons, `libtorch`'s linear module stores the weight and bias tensors in *transposed* form. On the R side, all we can do is explicitly point you to it and thereby, hopefully, alleviate the confusion.
-
-Let's go on. To apply this module to input data, just "call" it like a function:
-
 ```{r}
 x <- torch_randn(50, 5)
 output <- l(x)
-output$size()
+output$size() # foward pass
 ```
 
     [1] 50 16
 
-So that's the forward pass. How about gradient computation? Previously, when creating a tensor we wanted to figure as a "source" in gradient computation, we had to let `torch` know explicitly, passing `requires_grad = TRUE`. No such thing is required for built-in `nn_module()`s. We can immediately check that `output` knows what to do on `backward()`:
 
-```{r}
-output$grad_fn
-```
+**Models as sequences of layers: `nn_sequential()`**
 
-    AddmmBackward0
-
-To be sure though, let's calculate some "dummy" loss based on `output`, and call `backward()`. We see that now, the linear module's `weight` tensor has its `grad` field populated:
-
-```{r}
-loss <- output$mean()
-loss$backward()
-l$weight$grad
-```
-
-    torch_tensor
-    0.01 *
-    -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-     -0.3064  2.4118 -0.6095  0.3419 -1.6131
-    [ CPUFloatType{16,5} ]
-
-Thus, once you work with `nn_module`s, `torch` automatically assumes that you'll want gradients computed.
-
-`nn_linear()`, straightforward though it may be, is an essential building block encountered in most every model architecture. Others include:
-
--   `nn_conv1d()`, `nn_conv2d(), and nn_conv3d()`, the so-called *convolutional* layers that apply filters to input data of varying dimensionality,
-
--   `nn_lstm()` and `nn_gru()` , the *recurrent* layers that carry through a state,
-
--   `nn_embedding()` that is used to embed categorical data in high-dimensional space,
-
--   and more.
-
-### Building up a model
-
-The built-in `nn_module()`s give us *layers*, in usual speak. How do we combine those into *models*? Using the "factory function" `nn_module()`, we can define models of arbitrary complexity. But we may not always need to go that way.
-
-#### Models as sequences of layers: `nn_sequential()`index{`nn_sequential()`}
-
-If all our model should do is propagate straight through the layers, we can use `nn_sequential()` to build it. Models consisting of all linear layers are known as *Multi-Layer Perceptrons*index{Multi-Layer Perceptron (MLP)} (MLPs). Here is one:
+If all our model should do is propagate straight through the layers, we can use `nn_sequential()` to build it. Models consisting of all linear layers are known as *Multi-Layer Perceptrons* (MLPs). Here is one:
 
 ```{r}
 mlp <- nn_sequential(
@@ -809,97 +650,25 @@ mlp <- nn_sequential(
 )
 ```
 
-Take a close look at the layers involved. We've already seen `nnf_relu()`, the *function* that implements ReLU activation. (The `f` in `nnf_` stands for functional.) Below, `nn_relu`, like `nn_linear()`, is a module, that is, an object. This is because `nn_sequential()` expects all its arguments to be modules.
+**Other modules**
 
-Just like the built-in modules, you can apply this model to data by just *calling* it:
+-   `nn_conv1d()`, `nn_conv2d(), and nn_conv3d()`, the so-called *convolutional* layers that apply filters to input data of varying dimensionality,
 
-```{r}
-mlp(torch_randn(5, 10))
-```
+-   `nn_lstm()` and `nn_gru()` , the *recurrent* layers that carry through a state,
 
-    torch_tensor
-    0.01 *
-    -7.8097
-     -9.0363
-     -38.3282
-      5.3959
-     -16.4837
-    [ CPUFloatType{5,1} ][ grad_fn = <AddmmBackward0> ]
+-   `nn_embedding()` that is used to embed categorical data in high-dimensional space,
 
-The single call triggered a complete forward pass through the network. Analogously, calling `backward()` will back-propagate\index{backpropagation} through all the layers.
-
-What if you need the model to chain execution steps in a non-sequential way?
-
-#### Models with custom logic
-
-As already hinted at, this is where you use `nn_module()`.
-
-`nn_module()` creates constructors for custom-made R6 objects. Below, `my_linear()` is such a constructor. When called, it will return a linear module similar to the built-in `nn_linear()`.
-
-Two methods should be implemented in defining a constructor: `initialize()` and `forward()`. `initialize()` creates the module object's fields, that is, the objects or values it "owns" and can access from inside any of its methods. `forward()` defines what should happen when the module is called on the input:
-
-```{r}
-my_linear <- nn_module(
-  initialize = function(in_features, out_features) {
-    self$w <- nn_parameter(torch_randn(
-      in_features, out_features
-    ))
-    self$b <- nn_parameter(torch_zeros(out_features))
-  },
-  forward = function(input) {
-    input$mm(self$w) + self$b
-  }
-)
-```
-
-Note the use of `nn_parameter()`. `nn_parameter()` makes sure that the passed-in tensor is registered as a module *parameter*, and thus, is subject to backpropagation by default.
-
-To instantiate the newly-defined module, call its constructor:
-
-```{r}
-l <- my_linear(7, 1)
-l
-```
-
-    An `nn_module` containing 8 parameters.
-
-    Parameters ────────────────────────────────────────────────────────────────────────────────────────────
-    ● w: Float [1:7, 1:1]
-    ● b: Float [1:1]
-
-Granted, in this example, there really is no *custom logic* we needed to define our own module for. But here, you have a template applicable to any use case. Later, we'll see definitions of `initialize()` and `forward()` that are more complex, and we'll encounter additional methods defined on modules. But the basic mechanism will remain the same.
-
-At this point, you may feel like you'd like to rewrite last chapter's neural network using modules. Feel free to do so! Or maybe wait until, in the next chapter, we'll have learned about *optimizer*s, and built-in loss functions. Once we're done, we'll return to our two examples, function minimization and the regression network. Then, we'll be removing all do-it-yourself pieces rendered superfluous by `torch`.
-
-
+-   and more.
 
 ## 8. Optimizers {#sec:optimizers}
 
-By now, we've gone into quite some detail on tensors, automatic differentiation, and modules. In this chapter, we look into the final major concept present in core `torch`: *optimizers*\index{optimizers}. Where modules encapsulate layer and model logic, optimizers do the same for optimization strategies.
+Why optimizers? 
 
-Let's start by pondering why having optimizer objects is so useful.
-
-### Why optimizers?
-
-To this question, there are two main types of answer. First, the technical one.
-
-If you look back at how we coded our first neural network, you'll see that we proceeded like this:
-
--   compute predictions (forward pass),
-
--   calculate the loss,
-
--   have *autograd* compute partial derivatives (calling `loss$backward()`), and
-
--   update the parameters, subtracting from each some fraction of the gradient.
-
-Here is how that last part looked:
+**1. Optimizers help in updating weights**
 
 ```{r}
 library(torch)
-```
 
-```
 # compute gradient of loss w.r.t. all tensors with
 # requires_grad = TRUE
 loss$backward()
@@ -923,31 +692,9 @@ with_no_grad({
 })
 ```
 
-Now this was a small network -- imagine having to code such logic for architectures with tens or hundreds of layers! Surely this can't be what developers of a deep learning framework want their users to do. Accordingly, weight updates are taken care of by specialized objects -- the optimizers in question.
-
-Thus, the technical type of answer concerns usability and convenience. But more is involved. With the above approach, there's hardly a way to find a good learning rate other than by trial and error. And most probably, there is not even an optimal learning rate that would be constant over the whole training process. Fortunately, a rich tradition of research has turned up at set of proven update strategies. These strategies commonly involve a *state* kept between operations. This is another reason why, just like modules, optimizers are objects in `torch`.
-
-Before we look deeper at these strategies, let's see how we'd replace the above manual weight-updating process with a version that uses an optimizer.
-
-### Using built-in `torch` optimizers
-
-An optimizer needs to know what it's supposed to optimize. In the context of a neural network model, this will be the network's parameters. With no real difference between "model modules" and "layer modules", however, we can demonstrate how it works using a single built-in module such as `nn_linear()`.
-
-Here we instantiate a gradient descent optimizer\index{gradient descent (optimizer)} designed to work on some linear module's parameters:
+Now, update weights with an optimizer.
 
 ```{r}
-l <- nn_linear(10, 2)
-
-opt <- optim_sgd(l$parameters, lr = 0.1)
-```
-
-In addition to the always-required reference to what tensors should be optimized, `optim_sgd()` has just a single non-optional parameter: `lr`, the learning rate.
-
-Once we have an optimizer object, parameter updates are triggered by calling its `step()` method. One thing remains unchanged, though. We still need to make sure gradients are not accumulated over training iterations. This means we still call `zero_grad()` -- but this time, on the optimizer object.
-
-This is the complete code replacing the above manual procedure:
-
-```
 # compute gradient of loss w.r.t. all tensors with
 # requires_grad = TRUE
 # no change here
@@ -961,167 +708,32 @@ optimizer$zero_grad()
 optimizer$step()
 ```
 
-I'm sure you'll agree that usability-wise, this is an enormous improvement. Now, let's get back to our original question -- why optimizers? -- and talk more about the second, strategic part of the answer.
+**2. Optimizers help minimize the loss function**
 
-### Parameter update strategies
+**Things that matter:**
 
-Searching for a good learning rate by trial and error is costly. And the learning rate isn't even the only thing we're uncertain about. All it does is specify how big of a step to take. However, that's not the only unresolved question.
+1. Keep momentum. instead of starting in a completely new direction every time we re-compute the gradient, we might want to keep a bit of the old direction.
+2. Update individual learning rates. Looking back at just that example of minimizing a non-symmetric function ... Why, really, should we be constrained to using the same learning rate for all variables? When it's evident that all variables don't vary to the same degree.
+3. Update parameters as learning progresses. This is a fix for problems that only arise once you've taken actions to reduce the learning rate for overly-impactful features -- you also want to make sure that as learning still progresses, that parameters still get updated.
 
-So far, we've always assumed that the direction of steepest descent, as given by the gradient, is the best way to go. This is not always the case, though. So we are left with uncertainties regarding both magnitude and direction of parameter updates.
+**Update strategies:**
 
-Fortunately, over the last decade, there has been significant progress in research related to weight updating in neural networks. Here, we take a look at major considerations involved, and situate in context some of the most popular optimizers provided by `torch`.
+* Stochastic gradient descent (baseline)
+* Gradient descent with momentum
+* Adagrad
+* RMSProp
+* Adam
 
-The baseline to compare against is *gradient descent*, or *steepest descent*, the algorithm we've been using in our manual implementations of function minimization and neural-network training. Let's quickly recall the guiding principle behind it.
+Adam combines momentum and parameter-dependent updates, to avoid excessive dependence on fast-changing parameters.
 
-#### Gradient descent (a.k.a. steepest descent, a.k.a. stochastic gradient descent (SGD))\index{stochastic gradient descent (optimizer)}
+![Adam (white), compared with vanilla SGD (gray).](images/optimizers-adam.png)
+![Adam (white), compared with vanilla SGD (gray).](images/optimizers-adam.png)
 
-The gradient -- the vector of partial derivatives, one for each input feature -- indicates the direction in which a function increases most. Going in the opposite direction means we descend the fastest way possible. Or does it?
 
-Unfortunately, it is not that simple. It depends on the landscape that surrounds us, or put more technically, the contours of the function we want to minimize. To illustrate, compare two situations.
 
-The first is the one we encountered when first learning about automatic differentiation. The example there was a quadratic function in two dimensions. We didn't make a great deal out of it at the time, but an important point about this specific function was that the slope was the same in both dimensions. Under such conditions, steepest descent is optimal.
+## 9. Loss functions
 
-Let's verify that. The function was : $f(x_1, x_2) = 0.2 {x_1}^2 + 0.2 {x_2}^2 - 5$, and its gradient, $\begin{bmatrix}0.4\\0.4 \end{bmatrix}$. Now say we're at point $(x1, x2) = (6,6)$. For each coordinate, we subtract 0.4 times its current value. Or rather, that would be if we had to use a learning rate of 1. But we don't have to. If we pick a learning rate of 2.5, we can arrive at the minimum in a single step: $(x_1, x_2) = (6 - 2.5*0.4*6, 6 - 2.5*0.4*6) = (0,0)$. See below for an illustration of what happens in each case (@fig-optimizers-steepest-descent-symmetric).
-
-![Steepest descent on an isotropic paraboloid, using different learning rates.](images/optimizers-steepest-descent-symmetric.png){#fig-optimizers-steepest-descent-symmetric fig-alt="An isotropic paraboloid (one that has the same curvature in all dimensions), and two optimization paths. Both use the steepest-descent algorithm, but differ in learning rate. One needs many steps to arrive at the function's minimum, while the other gets there in a single step."}
-
-In a nutshell, thus, with a isotropic function like this -- the variance being the same in both directions -- it is "just" a matter of getting the learning rate right.
-
-Now compare this to what happens if slopes in both directions are decidedly distinct.
-
-This time, the coefficient for $x_2$ is ten times as big as that for $x_1$: We have $f(x_1, x_2) = 0.2 {x_1}^2 + 2 {x_2}^2 - 5$. This means that as we progress in the $x_2$ direction, the function value increases sharply, while in the $x_1$ direction, it rises much more slowly. Thus, during gradient descent, we make far greater progress in one direction than the other.
-
-Again, we investigate what happens for different learning rates\index{learning rate}. Below, we contrast three different settings. With the lowest learning rate, the process eventually reaches the minimum, but a lot more slowly than in the symmetric case. With a learning rate just slightly higher, descent gets lost in endless zig-zagging, oscillating between positive and negative values of the more influential variable, $x_2$. Finally, a learning rate that, again, is just minimally higher, has a catastrophic effect: The function value explodes, zig-zagging up right to infinity (@fig-optimizers-steepest-descent-elliptic).
-
-![Steepest descent on a non-isotropic paraboloid, using (minimally!) different learning rates.](images/optimizers-steepest-descent-elliptic.png){#fig-optimizers-steepest-descent-elliptic fig-alt="A non-isotropic paraboloid, stretched-out widely along the x-axis, but with y-values centered sharply around y = 0. Displayed are three optimization paths, all using steepest descent, but varying in learning rate. One of them reaches the minimum after a high number of steps; the second zig-zags along the y-axis, making just minimal progress along the x-axis; the third zig-zags off to infinity."}
-
-This should be pretty convincing -- even with a pretty conventional function of just two variables, steepest descent is far from being a panacea! And in deep learning, loss functions will be a *lot* less well-behaved. This is where the need for more sophisticated algorithms arises: Enter -- again -- optimizers.
-
-#### Things that matter
-
-Viewed conceptually, major modifications to steepest descent can be categorized by the considerations that drive them, or equivalently, by the problems they're trying to solve. Here, we focus on three such considerations.
-
-First, instead of starting in a completely new direction every time we re-compute the gradient, we might want to keep a bit of the old direction -- keep momentum, to use the technical term. This should help avoiding the inefficient zig-zagging seen in the example above.
-
-Second, looking back at just that example of minimizing a non-symmetric function ... Why, really, should we be constrained to using the same learning rate for all variables? When it's evident that all variables don't vary to the same degree, why don't we update them in individually appropriate ways?
-
-Third -- and this is a fix for problems that only arise once you've taken actions to reduce the learning rate for overly-impactful features -- you also want to make sure that learning still progresses, that parameters still get updated.
-
-These considerations are nicely illustrated by a few classics among the optimization algorithms.
-
-#### Staying on track: Gradient descent with momentum\index{momentum (optimizer)}
-
-In gradient descent with momentum, we don't *directly* use the gradient to update the weights. Instead, you can picture weight updates as particles moving on a trajectory: They want to keep going in whatever direction they're going -- keep their *momentum*, in physics speak -- but get continually deflected by collisions. These "collisions" are friendly nudges to, please, keep into account the gradient at the *now current* position. These dynamics result in a two-step update logic.
-
-In the below formulas, the choice of symbols reflects the physical analogy. $\mathbf{x}$ is the position, "where we're at" in parameter space -- or more simply, the current values of the parameters. Time evolution is captured by superscripts, with $\mathbf{y}^{(k)}$ representing the state of variable $\mathbf{y}$ at the current time, $k$. The instantaneous velocity at time $k$ is just what is measured by the gradient, $\mathbf{g}^{(k)}$. But in updating position, we won't directly make use of it. Instead, at each iteration, the update velocity is a combination of old velocity -- weighted by *momentum* parameter $m$ -- and the freshly-computed gradient (weighted by the learning rate). Step one of the two-step logic captures this strategy:
-
-$$
-\mathbf{v}^{(k+1)} = m \ \mathbf{v}^{(k)} + lr \ \mathbf{g}^{(k)} 
-$$ {#eq-optimizers-1}
-
-The second step then is the update of $\mathbf{x}$ due to this "compromise" velocity $\mathbf{v}$.
-
-$$
-\mathbf{x}^{(k+1)} = \mathbf{x}^{(k)} - \mathbf{v}^{(k+1)}
-$$ {#eq-optimizers-2}
-
-Besides the physics analogy, there is another one you may find useful, one that makes use of a concept prominent in time series analysis. If we choose $m$ and $lr$ such that they add up to 1, the result is an *exponentially weighted moving average*. (While this conceptualization, I think, helps understanding, in practice there is no necessity to have $m$ and $lr$ summing to 1, though).
-
-Now, let's return to the non-isotropic paraboloid, and compare SGD with and without momentum. For the latter (bright curve), I'm using a combination of $lr = 0.5$ and $mu = 0.1$. For SGD -- dark curve -- the learning rate is the "good one" from the figure above.Definitely, SGD with momentum requires far fewer steps to reach the minimum (@fig-optimizers-momentum).
-
-![SGD with momentum (white), compared with vanilla SGD (gray).](images/optimizers-momentum.png){#fig-optimizers-momentum fig-alt="A non-isotropic paraboloid, stretched-out widely along the x-axis, but with y-values centered sharply around y = 0. Displayed are two optimization paths, one using steepest descent, one using gradient descent with momentum. With steepest descent, many steps are needed to arrive at the minimum, while gradient descent with momentum needs far fewer steps."}
-
-#### Adagrad\index{Adagrad (optimizer)}
-
-Can we do better yet? Now, we know that in our running example, it is really the fact that one feature changes much faster than the other that slows down optimization. Having separate learning rates per parameter thus clearly seems like a thing we want. In fact, most of the optimizers popular in deep learning have per-parameter learning rates. But how would you actually determine those?
-
-This is where different algorithms differ. Adagrad, for example, divides each parameter update by the cumulative sum of its partial derivatives (squared, to be precise), where "cumulative" means we're keeping track of them since the very first iteration. If we call that "accumulator variable" $s$, refer to the parameter in question by $i$, and count iterations using $k$, this gives us the following formula for keeping $s$ updated:
-
-$$
-s_i^{(k)} = \sum_{j=1}^k (g_i^{(j)})^2
-$$ {#eq-optimizers-3}
-
-(By the way, feel free to skip over the formulas if you don't like them. I'm doing my best to communicate what they do in words, so you shouldn't miss out on essential information.)
-
-Now, the update rule for each parameter subtracts a portion of the gradient, as did vanilla steepest descent -- but this time, that portion is determined not just by the (global) learning rate, but also, by the aforementioned cumulative sum of squared partials. The bigger that sum -- that is, the bigger the gradients have been during training -- the smaller the adjustment:[^optimizers-1]
-
-[^optimizers-1]: Here $\epsilon$ is just a tiny value added to avoid division by zero.
-
-$$
-x_i^{(k+1)} = x_i^{(k)} - \frac{lr}{\epsilon + \sqrt{s_i^{(k)}}}\ g_i^{(k)}\\
-$$ {#eq-optimizers-4}
-
-The net effect of this strategy is that, if a parameter has consistently high gradients, its influence is played down. Parameters with, habitually, tiny gradients, on the other hand, can be sure to receive a lot of attention once that changes.
-
-With this algorithm, the global learning rate, $lr$, is of lesser importance. In our running example, it turns out that for best results, we can (and should) use a very high learning rate: 3.7! Here (@fig-optimizers-adagrad) is the result, again comparing with vanilla gradient descent (gray curve):
-
-![Adagrad (white), compared with vanilla SGD (gray).](images/optimizers-adagrad.png){#fig-optimizers-adagrad fig-alt="A non-isotropic paraboloid, stretched-out widely along the x-axis, but with y-values centered sharply around y = 0. Displayed are two optimization paths, one using steepest descent, one using the Adagrad algorithm. With steepest descent, many steps are needed to arrive at the minimum, while Adagrad needs just four steps."}
-
-In our example, thus, Adagrad performs excellently. But in training a neural network, we tend to run *a lot* of iterations. Then, with the way gradients are accumulated, the effective learning rate decreases more and more, and a dead end is reached.
-
-Are there other ways to have individual, per-parameter learning rates?
-
-#### RMSProp\index{RMSProp (optimizer)}
-
-RMSProp replaces the cumulative-gradient strategy found in Adagrad with a weighted-average one. At each point, the "bookkeeping", per-parameter variable $s_i$ is a weighted average of its previous value and the previous (squared) gradient:
-
-$$
-s_i^{(k+1)} = \gamma \ s_i^{(k)} + (1-\gamma) \ (g_i^{(k)})^2
-$$ {#eq-optimizers-5}
-
-The update then looks as with Adagrad:
-
-$$
-x_i^{(k+1)} = x_i^{(k)} - \frac{lr}{\epsilon + \sqrt{s_i^{(k)}}}\ g_i^{(k)}\\
-$$ {#eq-optimizers-6}
-
-In this way, each parameter update gets weighted appropriately, without learning slowing down overall.
-
-Here is the result, again compared against the SGD baseline (@fig-optimizers-rmsprop):
-
-![RMSProp (white), compared with vanilla SGD (gray).](images/optimizers-rmsprop.png){#fig-optimizers-rmsprop fig-alt="A non-isotropic paraboloid, stretched-out widely along the x-axis, but with y-values centered sharply around y = 0. Displayed are two optimization paths, one using steepest descent, one using RMSProp. With steepest descent, many steps are needed to arrive at the minimum, while RMSProp needs just four steps."}
-
-As of today, RMSProp is one of the most-often used optimizers in deep learning, with probably just Adam - to be introduced next -- being more popular.
-
-#### Adam\index{Adam (optimizer)}
-
-Adam combines two concepts we've already seen: momentum -- to keep "on track" -- and parameter-dependent updates, to avoid excessive dependence on fast-changing parameters. The logic is like this.[^optimizers-2]
-
-[^optimizers-2]: Actual implementations usually contain an additional step, but there is no need to go into details here.
-
-For one, just like in SGD with momentum, we keep an exponentially weighted average of gradients. Here the weighting coefficient, $\gamma_v$, is usually set to 0.9.
-
-$$
-v_i^{(k+1)} = \gamma_v \ v_i^{(k)} + (1-\gamma_v) \ g_i^{(k)}
-$$ {#eq-optimizers-7}
-
-Also, like in RMSProp, there is an exponentially weighted average of squared gradients, with weighting coefficient $\gamma_s$ usually set to 0.999.
-
-$$
-s_i^{(k+1)} = \gamma_s \ s_i^{(k)} + (1-\gamma_s) \ (g_i^{(k)})^2
-$$ {#eq-optimizers-8}
-
-The parameter updates now make use of that information in the following way. The velocity determines the direction of the update, while both velocity and magnitude of gradients (together with the learning rate, $lr$) determine its size:
-
-$$
-x_i^{(k+1)} = x_i^{(k)} - \frac{lr \ 
-v_i^{(k+1)}}{\epsilon + \sqrt{s_i^{(k+1)}}}\ \\
-$$ {#eq-optimizers-9}
-
-Let's conclude this chapter by testing Adam on our running example (@fig-optimizers-adam).
-
-![Adam (white), compared with vanilla SGD (gray).](images/optimizers-adam.png){#fig-optimizers-adam fig-alt="A non-isotropic paraboloid, stretched-out widely along the x-axis, but with y-values centered sharply around y = 0. Displayed are two optimization paths, one using steepest descent, one using Adam. With steepest descent, many steps are needed to arrive at the minimum, while Adam needs four steps only."}
-
-Next, we head on to loss functions, the last building block to look at before we re-factor the regression network and function minimization examples to benefit from `torch` modules and optimizers.
-
-
-
-
-## 9. Loss functions {#sec:loss-functions}
-
-The concept of a loss function is essential to machine learning. At any iteration, the current loss value indicates how far the estimate is from the target. It is then used to update the parameters in a direction that will decrease the loss.
-
-In our applied example, we already have made use of a loss function: mean squared error, computed manually as
+**Mean squared error**
 
 ```{r}
 library(torch)
@@ -1129,15 +741,9 @@ library(torch)
 loss <- (y_pred - y)$pow(2)$sum()
 ```
 
-As you might expect, here is another area where this kind of manual effort is not needed.
-
-In this final conceptual chapter before we re-factor our running examples, we want to talk about two things: First, how to make use of `torch`'s built-in loss functions\index{loss functions (built into torch)}. And second, what function to choose.
-
-### `torch` loss functions
+**`torch` loss functions**
 
 In `torch`, loss functions start with `nn_` or `nnf_`.
-
-Using `nnf_`, you directly *call a function*. Correspondingly, its arguments (estimate and target) both are tensors. For example, here is `nnf_mse_loss()`, the built-in analog to what we coded manually:
 
 ```{r}
 nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
@@ -1147,51 +753,13 @@ nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
     0.81
     [ CPUFloatType{} ]
 
-With `nn_`, in contrast, you create an object:
 
-```{r}
-l <- nn_mse_loss()
-```
+**What loss function should I choose?**
 
-This object can then be called on tensors to yield the desired loss:
+* Maximum likelihood
+* Regression
+* Classification
 
-```{r}
-l(torch_ones(2, 2),torch_zeros(2, 2) + 0.1)
-```
-
-    torch_tensor
-    0.81
-    [ CPUFloatType{} ]
-
-Whether to choose object or function is mainly a matter of preference and context. In larger models, you may end up combining several loss functions, and then, creating loss objects can result in more modular, and more maintainable code. In this book, I'll mainly use the first way, unless there are compelling reasons to do otherwise.
-
-On to the second question.
-
-### What loss function should I choose?
-
-In deep learning, or machine learning overall, most applications aim to do one (or both) of two things: predict a numerical value, or estimate a probability. The regression task of our running example does the former; real-world applications might forecast temperatures, infer employee churn, or predict sales. In the second group, the prototypical task is *classification*. To categorize, say, an image according to its most salient content, we really compute the respective probabilities. Then, when the probability for "dog" is 0.7, while that for "cat" is 0.3, we say it's a dog.
-
-#### Maximum likelihood
-
-In both classification and regression, the mostly used loss functions are built on the *maximum likelihood* principle. Maximum likelihood means: We want to choose model parameters in a way that the *data*, the things we have observed or could have observed, are maximally likely. This principle is not "just" fundamental, it is also intuitively appealing. Imagine a simple example.
-
-Say we have the values 7.1, 22.14, and 11.3, and we know that the underlying process follows a normal distribution. Then it is much more likely that these data have been generated by a distribution with mean 14 and standard deviation 7 than by one with mean 20 and standard deviation 1.
-
-#### Regression
-
-In regression (that implicitly assumes the target distribution to be normal[^loss_functions-1]), to maximize likelihood, we just keep using mean squared error -- the loss we've been computing all along. Maximum likelihood estimators have all kinds of desirable statistical properties. However, in concrete applications, there may be reasons to use different ones.
-
-[^loss_functions-1]: For cases where that assumption seems unlikely, distribution-adequate loss functions are provided (e.g., Poisson negative log likelihood, available as `nnf_poisson_nll_loss()` .
-
-For example, say a dataset has outliers where, for some reason, prediction and target are found to be deviating substantially. Mean squared error will allocate high importance to these outliers. In such cases, possible alternatives are mean absolute error (`nnf_l1_loss()`) and smooth L1 loss (`nn_smooth_l1_loss()`). The latter is a mixture type that, by default, computes the absolute (L1) error, but switches to squared (L2) error whenever the absolute errors get very small.
-
-#### Classification
-
-In classification, we are comparing two *distributions*. The estimate is a probability by design, and the target can be viewed as one, too. In that light, maximum likelihood estimation is equivalent to minimizing the Kullback-Leibler divergence (KL divergence).
-
-KL divergence is a measure of how two distributions differ. It depends on two things: the likelihood of the data, as determined by some data-generating process, and the likelihood of the data under the model. In the machine learning scenario, however, we are concerned only with the latter. In that case, the criterion to be minimized reduces to the *cross-entropy*\index{cross entropy} between the two distributions. And cross-entropy loss is exactly what is commonly used in classification tasks.
-
-In `torch`, there are several variants of loss functions that calculate cross-entropy. With this topic, it's nice to have a quick reference around; so here is a quick lookup table (@tbl-loss-funcs-features abbreviates the -- rather long-ish -- function names; see @tbl-loss-abbrevs for the mapping):
 
 |        |          |             |            |               |           |
 |--------|----------|-------------|------------|---------------|-----------|
@@ -1211,442 +779,22 @@ In `torch`, there are several variants of loss functions that calculate cross-en
 | *BCe*  | `nnf_binary_cross_entropy()`             |
 | *Nll*  | `nnf_nll_loss()`                         |
 
-: Abbreviations used to refer to `torch` loss functions. {#tbl-loss-abbrevs}
 
-To pick the function applicable to your use case, there are two things to consider.
 
-First, are there just two possible classes ("dog vs. cat", "person present / person absent", etc.), or are there several?
-
-And second, what is the type of the estimated values? Are they raw scores (in theory, any value between plus and minus infinity)? Are they probabilities (values between 0 and 1)? Or (finally) are they log probabilities, that is, probabilities to which a logarithm has been applied? (In the final case, all values should be either negative or equal to zero.)
-
-##### Binary data\index{cross entropy!binary}
-
-Starting with binary data, our example classification vector is a sequence of zeros and ones. When thinking in terms of probabilities, it is most intuitive to imagine the ones standing for presence, the zeros for absence of one of the classes in question -- cat or no cat, say.
-
-```{r}
-target <- torch_tensor(c(1, 0, 0, 1, 1))
-```
-
-The raw scores could be anything. For example:
-
-```{r}
-unnormalized_estimate <-
-  torch_tensor(c(3, 2.7, -1.2, 7.7, 1.9))
-```
-
-To turn these into probabilities, all we need to do is pass them to `nnf_sigmoid()`. `nnf_sigmoid()` squishes its argument to values between zero and one:
-
-```{r}
-probability_estimate <- nnf_sigmoid(unnormalized_estimate)
-probability_estimate
-```
-
-    torch_tensor
-     0.9526
-     0.9370
-     0.2315
-     0.9995
-     0.8699
-    [ CPUFloatType{5} ]
-
-From the above table, we see that given `unnormalized_estimate` and `probability_estimate`, we can use both as inputs to a loss function -- but we have to choose the appropriate one. Provided we do that, the output has to be the same in both cases.
-
-Let's see (raw scores first):
-
-```{r}
-nnf_binary_cross_entropy_with_logits(
-  unnormalized_estimate, target
-)
-```
-
-    torch_tensor
-    0.643351
-    [ CPUFloatType{} ]
-
-And now, probabilities:\index{\texttt{nnf{\textunderscore}binary{\textunderscore}cross{\textunderscore}entropy()}}
-
-```{r}
-nnf_binary_cross_entropy(probability_estimate, target)
-```
-
-    torch_tensor
-    0.643351
-    [ CPUFloatType{} ]
-
-That worked as expected. What does this mean in practice? It means that when we build a model for binary classification, and the final layer computes an un-normalized score, we don't need to attach a sigmoid layer to obtain probabilities. We can just call `nnf_binary_cross_entropy_with_logits()` when training the network. In fact, doing so is the preferred way, also due to reasons of numerical stability.
-
-##### Multi-class data\index{cross entropy!multi-class}
-
-Moving on to multi-class data, the most intuitive framing now really is in terms of (several) *classes*, not presence or absence of a single class. Think of classes as class indices (maybe indexing into some look-up table). Being indices, technically, classes start at 1:
-
-```{r}
-target <- torch_tensor(c(2, 1, 3, 1, 3), dtype = torch_long())
-```
-
-In the multi-class scenario, raw scores are a two-dimensional tensor. Each row contains the scores for one observation, and each column corresponds to one of the classes. Here's how the raw estimates could look:
-
-```{r}
-unnormalized_estimate <- torch_tensor(
-  rbind(c(1.2, 7.7, -1),
-    c(1.2, -2.1, -1),
-    c(0.2, -0.7, 2.5),
-    c(0, -0.3, -1),
-    c(1.2, 0.1, 3.2)
-  )
-)
-```
-
-As per the above table, given this estimate, we should be calling `nnf_cross_entropy()` (and we will, when below we compare results).
-
-So that's the first option, and it works exactly as with binary data. For the second, there is an additional step.
-
-First, we again turn raw scores into probabilities, using `nnf_softmax()`. For most practical purposes, `nnf_softmax()` can be seen as the multi-class equivalent of `nnf_sigmoid()`. Strictly though, their effects are not the same. In a nutshell, `nnf_sigmoid()` treats low-score and high-score values equivalently, while `nnf_softmax()` exacerbates the distances between the top score and the remaining ones ("winner takes all").
-
-```{r}
-probability_estimate <- nnf_softmax(unnormalized_estimate,
-  dim = 2
-)
-probability_estimate
-
-```
-
-    torch_tensor
-     0.0015  0.9983  0.0002
-     0.8713  0.0321  0.0965
-     0.0879  0.0357  0.8764
-     0.4742  0.3513  0.1745
-     0.1147  0.0382  0.8472
-    [ CPUFloatType{5,3} ]
-
-The second step, the one that was not required in the binary case, consists in transforming the probabilities to log probabilities. In our example, this could be accomplished by calling `torch_log()` on the `probability_estimate` we just computed. Alternatively, both steps together are taken care of by `nnf_log_softmax()`:
-
-```{r}
-logprob_estimate <- nnf_log_softmax(unnormalized_estimate,
-  dim = 2
-)
-logprob_estimate
-```
-
-    torch_tensor
-    -6.5017 -0.0017 -8.7017
-    -0.1377 -3.4377 -2.3377
-    -2.4319 -3.3319 -0.1319
-    -0.7461 -1.0461 -1.7461
-    -2.1658 -3.2658 -0.1658
-    [ CPUFloatType{5,3} ]
-
-Now that we have estimates in both possible forms, we can again compare results from applicable loss functions. First, `nnf_cross_entropy()` on the raw scores:\index{\texttt{nnf{\textunderscore}cross{\textunderscore}entropy()}}
-
-```{r}
-nnf_cross_entropy(unnormalized_estimate, target)
-```
-
-    torch_tensor
-    0.23665
-    [ CPUFloatType{} ]
-
-And second, `nnf_nll_loss()` on the log probabilities:\index{\texttt{nnf{\textunderscore}nll{\textunderscore}loss()}}
-
-```{r}
-nnf_nll_loss(logprob_estimate, target)
-```
-
-    torch_tensor
-    0.23665
-    [ CPUFloatType{} ]
-
-Application-wise, what was said for the binary case applies here as well: In a multi-class classification network, there is no need to have a softmax layer at the end.
-
-Before we end this chapter, let's address a question that might have come to mind. Is not binary classification a sub-type of the multi-class setup? Should we not, in that case, arrive at the same result, whatever the method chosen?
-
-##### Check: Binary data, multi-class method
-
-Let's see. We re-use the binary-classification scenario employed above. Here it is again:
-
-```{r}
-target <- torch_tensor(c(1, 0, 0, 1, 1))
-
-unnormalized_estimate <- 
-  torch_tensor(c(3, 2.7, -1.2, 7.7, 1.9))
-
-probability_estimate <- nnf_sigmoid(unnormalized_estimate)
-
-nnf_binary_cross_entropy(probability_estimate, target)
-
-```
-
-    torch_tensor
-    0.64335
-    [ CPUFloatType{} ]
-
-We hope to get the same value doing things the multi-class way. We already have the probabilities (namely, `probability_estimate`); we just need to put them into the "observation by class" format expected by `nnf_nll_loss()`:
-
-```{r}
-# logits
-multiclass_probability <- torch_tensor(rbind(
-  c(1 - 0.9526, 0.9526),
-  c(1 - 0.9370, 0.9370),
-  c(1 - 0.2315, 0.2315),
-  c(1 - 0.9995, 0.9995),
-  c(1 - 0.8699, 0.8699)
-))
-```
-
-Now, we still want to apply the logarithm. And there is one other thing to be taken care of: In the binary setup, classes were coded as probabilities (either 0 or 1); now, we're dealing with indices. This means we add 1 to the `target` tensor:
-
-```{r}
-target <- target + 1
-```
-
-Finally, we can call `nnf_nll_loss()`:
-
-```{r}
-nnf_nll_loss(
-  torch_log(multiclass_probability),
-  target$to(dtype = torch_long())
-)
-```
-
-    torch_tensor
-    0.643275
-    [ CPUFloatType{} ]
-
-There we go. The results are indeed the same.
-
-
-
-
-## 10. Function minimization with L-BFGS {#sec:optim-2}
-
-Now that we've become acquainted with `torch` modules and optimizers, we can go back to the two tasks we already approached without either: function minimization, and training a neural network. Again, we start with minimization, and leave the network to the next chapter.
-
-Thinking back to what we did when minimizing the Rosenbrock function, in essence it was this:
-
-1.  Define a tensor to hold the parameter to be optimized, namely, the $\mathbf{x}$-position where the function attains its minimum.
-
-2.  Iteratively update the parameter, subtracting a fraction of the current gradient.
-
-While as a strategy, this was straightforward, a problem remained: How big a fraction of the gradient should we subtract? It's exactly here that optimizers come in useful.
-
-### Meet L-BFGS\index{L-BFGS (optimizer)}
+## 10. Function minimization with L-BFGS
 
 So far, we've only talked about the kinds of optimizers often used in deep learning -- stochastic gradient descent (SGD), SGD with momentum, and a few classics from the *adaptive* *learning rate* family: RMSProp, Adadelta, Adagrad, Adam. All these have in common one thing: They only make use of the *gradient*, that is, the vector of first derivatives. Accordingly, they are all *first-order* algorithms. This means, however, that they are missing out on helpful information provided by the *Hessian*, the matrix of second derivatives.
 
-#### Changing slopes
+**Approximate Newton: BFGS and L-BFGS**
 
-First derivatives tell us about the *slope* of the landscape: Does it go up? Does it go down? How much so? Going a step further, second derivatives encode how much that slope *changes*.
+Among approximate Newton methods, probably the most-used is the Broyden-Goldfarb-Fletcher-Shanno algorithm, or BFGS. Instead of continually computing the exact inverse of the Hessian, it keeps an iteratively-updated approximation of that inverse. BFGS is often implemented in a more memory-friendly version, referred to as Limited-Memory BFGS (L-BFGS). This is the one provided as part of the core torch optimizers.
 
-Why should that be important?
-
-Assume we're at point $\mathbf{x}_n$, and have just decided on a suitable descent direction. We take a step, of length determined by some pre-chosen learning rate, all set to arrive at point $\mathbf{x}_{n+1}$. What we don't know is how the slope will have changed by the time we'll have gotten there. Maybe it's become much flatter in the meantime: In this case, we'll have gone way too far, overshooting and winding up in a far-off area where anything could have happened in-between (including the slope going *up* again!).
-
-We can illustrate this on a function of a single variable. Take a parabola, such as
-
-$$
-y = 10x^2
-$$
-
-Its derivative is $\frac{dy}{dx} = 20x$. If our current $x$ is, say, $3$, and we work with a learning rate of $0.1$, we'll subtract $20 * 3 * 0.1= 6$, winding up at $-3$.
-
-But say we had slowed down at $2$ and inspected the current slope. We'd have seen that there, the slope was less steep; in fact, when at that point, we should just have subtracted $20 * 2 * 0.1= 4$.
-
-By sheer luck, this "close-your-eyes-and-jump" strategy can still work out -- *if* we happen to be using just the right learning rate for the function in question. (At the chosen learning rate, this would have been the case for a different parabola, $y = 5x^2$, for example.) But wouldn't it make sense to include second derivatives in the decision from the outset?
-
-Algorithms that do this form the family of Newton methods. First, we look at their "purest" specimen, which best illustrates the principle but seldom is feasible in practice.
-
-#### Exact Newton method
-
-In higher dimensions, the exact Newton method multiplies the gradient by the inverse of the Hessian, thus scaling the descent direction coordinate-by-coordinate. Our current example has just a single independent variable; so this means for us: take the first derivative, and divide by the second.
-
-We now have a scaled gradient -- but what portion of it should we subtract? In its original version, the exact Newton method does not make use of a learning rate, thus freeing us of the familiar trial-and-error game. Let's see, then: In our example, the second derivative is $20$, meaning that at $x=3$ we have to subtract $(20 * 3)/20=3$. Voilà, we end up at $0$, the location of the minimum, in a single step.
-
-Seeing how that turned out just great, why don't we do it all the time? For one, it will work perfectly only with quadratic functions, like the one we chose for the demonstration. In other cases, it, too, will normally need some "tuning", for example, by using a learning rate here as well.
-
-But the main reason is another one. In more realistic applications, and certainly in the areas of machine learning and deep learning, computing the inverse of the Hessian at every step is way too costly. (It may, in fact, not even be possible.) This is where *approximate*, a.k.a. *Quasi-Newton*, methods come in.
-
-#### Approximate Newton: BFGS and L-BFGS
-
-Among approximate Newton methods, probably the most-used is the *Broyden-Goldfarb-Fletcher-Shanno* algorithm, or *BFGS*. Instead of continually computing the exact inverse of the Hessian, it keeps an iteratively-updated approximation of that inverse. BFGS is often implemented in a more memory-friendly version, referred to as *Limited-Memory BFGS* (*L-BFGS*). This is the one provided as part of the core `torch` optimizers.
-
-Before we get there, though, there is one last conceptual thing to discuss.
-
-#### Line search
-
-Like their exact counterpart, approximate Newton methods can work without a learning rate. In that case, they compute a descent direction and follow the scaled gradient as-is. We already talked about how, depending on the function in question, this can work more or less well. When it does not, there are two things one could do: Firstly, take small steps, or put differently, introduce a learning rate. And secondly, do a *line search*.
+**Line search**
 
 With line search, we spend some time evaluating how far to follow the descent direction. There are two principal ways of doing this.
 
-The first, *exact* line search, involves yet another optimization problem: Take the current point, compute the descent direction, and hard-code them as givens in a *second* function that depends on the learning rate only. Then, differentiate this function to find *its* minimum. The solution will be the learning rate that optimizes the step length taken.
-
-The alternative strategy is to do an approximate search. By now, you're probably not surprised: Just as approximate Newton is more realistically-feasible than exact Newton, approximate line search is more practicable than exact line search.
-
-For line search, approximating the best solution means following a set of proven heuristics. Essentially, we look for something that is *just* *good enough*. Among the most established heuristics are the *Strong Wolfe conditions*, and this is the strategy implemented in `torch`'s `optim_lbfgs()`. In the next section, we'll see how to use `optim_lbfgs()` to minimize the Rosenbrock function, both with and without line search.
-
-### Minimizing the Rosenbrock function with `optim_lbfgs()`
-
-Here is the Rosenbrock function again:
-
-```{r}
-library(torch)
-
-a <- 1
-b <- 5
-
-rosenbrock <- function(x) {
-  x1 <- x[1]
-  x2 <- x[2]
-  (a - x1)^2 + b * (x2 - x1^2)^2
-}
-```
-
-In our manual minimization efforts, the procedure was the following. A one-time action, we first defined the parameter tensor destined to hold the current $\mathbf{x}$:
-
-```{r}
-x <- torch_tensor(c(-1, 1), requires_grad = TRUE)
-```
-
-Then, we iteratively executed the following operations:
-
-1.  Calculate the function value at the current $\mathbf{x}$.
-
-2.  Compute the gradient of that value at the position in question.
-
-3.  Subtract a fraction of the gradient from the current $\mathbf{x}$.
-
-How, if so, does that blueprint change?
-
-The first step remains unchanged. We still have
-
-```{r}
-value <- rosenbrock(x)
-```
-
-The second step stays the same, as well. We still call `backward()` directly on the output tensor:
-
-```{r}
-value$backward()
-```
-
-This is because an optimizer does not *compute* gradients; it *decides what to do with the gradient* once it's been computed.
-
-What changes, thus, is the third step, the one that also was the most cumbersome. Now, it is the optimizer that applies the update. To be able to do that, there is a prerequisite: Prior to starting the loop, the optimizer will need to be told which parameter it is supposed to work on. In fact, this is so important that you can't even create an optimizer without passing it that parameter:
-
-```{r}
-opt <- optim_lbfgs(x)
-```
-
-In the loop, we now call the `step()` method on the optimizer object to update the parameter. There is just one part from our manual procedure that needs to get carried over to the new way: We still need to zero out the gradient on each iteration. Just this time, not on the parameter tensor, `x`, but the optimizer object itself. *In principle*, this then yields the following actions to be performed on each iteration:
-
-```
-value <- rosenbrock(x)
-
-opt$zero_grad()
-value$backward()
-
-opt$step()
-```
-
-Why "in principle"? In fact, this is what we'd write for every optimizer *but* `optim_lbfgs()`.
-
-For `optim_lbfgs()`, `step()` needs to be called passing in an anonymous function, a closure. Zeroing of previous gradients, function call, and gradient calculation, all these happen inside the closure:
-
-```{r}
-calc_loss <- function() {
-  optimizer$zero_grad()
-  value <- rosenbrock(x_star)
-  value$backward()
-  value
-}
-
-
-```
-
-Having executed those actions, the closure returns the function value. Here is how it is called by `step()`:
-
-```
-for (i in 1:num_iterations) {
-  optimizer$step(calc_loss)
-}
-```
-
-Now we put it all together, add some logging output, and compare what happens with and without line search.
-
-#### `optim_lbfgs()` default behavior
-
-As a baseline, we first run without line search. Two iterations are enough. In the below output, you can see that in each iteration, the closure is evaluated several times. This is the technical reason we had to create it in the first place.
-
-```{r}
-num_iterations <- 2
-
-x <- torch_tensor(c(-1, 1), requires_grad = TRUE)
-
-optimizer <- optim_lbfgs(x)
-
-calc_loss <- function() {
-  optimizer$zero_grad()
-
-  value <- rosenbrock(x)
-  cat("Value is: ", as.numeric(value), "\n")
-
-  value$backward()
-  value
-}
-
-for (i in 1:num_iterations) {
-  cat("\nIteration: ", i, "\n")
-  optimizer$step(calc_loss)
-}
-
-
-```
-
-    Iteration:  1 
-    Value is:  4 
-    Value is:  6 
-    Value is:  318.0431 
-    Value is:  5.146369 
-    Value is:  4.443705 
-    Value is:  0.8787204 
-    Value is:  0.8543001 
-    Value is:  2.001667 
-    Value is:  0.5656172 
-    Value is:  0.400589 
-    Value is:  7.726219 
-    Value is:  0.3388008 
-    Value is:  0.2861604 
-    Value is:  1.951176 
-    Value is:  0.2071857 
-    Value is:  0.150776 
-    Value is:  0.411357 
-    Value is:  0.08056168 
-    Value is:  0.04880721 
-    Value is:  0.0302862 
-
-    Iteration:  2 
-    Value is:  0.01697086 
-    Value is:  0.01124081 
-    Value is:  0.0006622815 
-    Value is:  3.300996e-05 
-    Value is:  1.35731e-07 
-    Value is:  1.111701e-09 
-    Value is:  4.547474e-12 
-
-To make sure we really have found the minimum, we check `x`:
-
-```{r}
-x
-```
-
-    torch_tensor
-     1.0000
-     1.0000
-    [ CPUFloatType{2} ]
-
-Can this still be improved upon?
-
-#### `optim_lbfgs()` with line search
-
-Let's see. Below, the only line that's changed is the one where we construct the optimizer.
+1. Exact. Take the current point, compute the descent direction, and hard-code them as givens in a *second* function that depends on the learning rate only. Then, differentiate this function to find *its* minimum. The solution will be the learning rate that optimizes the step length taken.
+2. Approximate search. Essentially, we look for something that is *just* *good enough*. Among the most established heuristics are the *Strong Wolfe conditions*, and this is the strategy implemented in `torch`'s `optim_lbfgs()`.
 
 ```{r}
 num_iterations <- 2
@@ -1671,42 +819,9 @@ for (i in 1:num_iterations) {
 }
 ```
 
-    Iteration:  1 
-    Value is:  4 
-    Value is:  6 
-    Value is:  3.802412 
-    Value is:  3.680712 
-    Value is:  2.883048 
-    Value is:  2.5165 
-    Value is:  2.064779 
-    Value is:  1.38384 
-    Value is:  1.073063 
-    Value is:  0.8844351 
-    Value is:  0.5554555 
-    Value is:  0.2501077 
-    Value is:  0.8948895 
-    Value is:  0.1619074 
-    Value is:  0.06823064 
-    Value is:  0.01653575 
-    Value is:  0.004060207 
-    Value is:  0.00353789 
-    Value is:  0.000391416 
-    Value is:  4.303527e-06 
-    Value is:  2.036851e-08 
-    Value is:  6.870948e-12 
+## 11. Modularizing the neural network [Exercise]
 
-    Iteration:  2 
-    Value is:  6.870948e-12 
-
-With line search, a single iteration is sufficient to reach the minimum. Inspecting the individual losses, we also see that the algorithm reduces the loss nearly every time it probes the function, which without line search, had not been the case.
-
-
-
-## 11. Modularizing the neural network {#sec:network-2}
-
-Let's recall the network we built a few chapters ago. Its purpose was regression, but its method was not *linear*. Instead, an activation function (ReLU, for "rectified linear unit") introduced a nonlinearity, located between the single hidden layer and the output layer. The "layers", in this original implementation, were just tensors: weights and biases. You won't be surprised to hear that these will be replaced by *modules*.
-
-How will the training process change? Conceptually, we can distinguish four phases: the forward pass, loss computation, backpropagation of gradients, and weight updating. Let's think about where our new tools will fit in:
+Conceptually, we distinguish four phases. We make the code more modular and more readable.
 
 -   The forward pass, instead of calling functions on tensors, will call the model.
 
@@ -1716,11 +831,7 @@ How will the training process change? Conceptually, we can distinguish four phas
 
 -   Weight updating is taken care of by the optimizer.
 
-Once we've made those changes, the code will be more modular, and a lot more readable.
-
-### Data
-
-As a prerequisite, we generate the data, same as last time.
+**Data**
 
 ```{r}
 library(torch)
@@ -1733,13 +844,9 @@ n <- 100
 x <- torch_randn(n, d_in)
 coefs <- c(0.2, -1.3, -0.5)
 y <- x$matmul(coefs)$unsqueeze(2) + torch_randn(n, 1)
-
-
 ```
 
-### Network
-
-With two linear layers connected via ReLU activation, the easiest choice is a sequential module, very similar to the one we saw in the introduction to modules:
+**Network**
 
 ```{r}
 # dimensionality of hidden layer
@@ -1754,9 +861,7 @@ net <- nn_sequential(
 )
 ```
 
-### Training
-
-Here is the updated training process. We use the Adam optimizer, a popular choice.
+**Training**
 
 ```{r}
 
@@ -1784,33 +889,6 @@ for (t in 1:200) {
 }
 ```
 
-    Epoch:  10    Loss:  2.549933 
-    Epoch:  20    Loss:  2.422556 
-    Epoch:  30    Loss:  2.298053 
-    Epoch:  40    Loss:  2.173909 
-    Epoch:  50    Loss:  2.0489 
-    Epoch:  60    Loss:  1.924003 
-    Epoch:  70    Loss:  1.800404 
-    Epoch:  80    Loss:  1.678221 
-    Epoch:  90    Loss:  1.56143 
-    Epoch:  100    Loss:  1.453637 
-    Epoch:  110    Loss:  1.355832 
-    Epoch:  120    Loss:  1.269234 
-    Epoch:  130    Loss:  1.195116 
-    Epoch:  140    Loss:  1.134008 
-    Epoch:  150    Loss:  1.085828 
-    Epoch:  160    Loss:  1.048921 
-    Epoch:  170    Loss:  1.021384 
-    Epoch:  180    Loss:  1.0011 
-    Epoch:  190    Loss:  0.9857832 
-    Epoch:  200    Loss:  0.973796 
-
-In addition to shortening and streamlining the code, our changes have made a big difference performance-wise.
-
-### What's to come
-
-You now know a lot about how `torch` works, and how to use it to minimize a cost function in various settings: for example, to train a neural network. But for real-world applications, there is a lot more `torch` has to offer. The next -- and most voluminous -- part of the book focuses on deep learning.
-
 
 
 
@@ -1818,7 +896,7 @@ You now know a lot about how `torch` works, and how to use it to minimize a cost
 
 ## 12. Overview
 
-This part of the book is completely dedicated to applications of deep learning. There will be two categories of things to dive into: topics workflow-related, and topics related to domain adaptation.
+The upcoming two chapters will introduce you to workflow-related techniques that are indispensable in practice. You'll encounter another package, `luz`, that endows `torch` with an important layer of abstraction, and significantly streamlines the workflow. Once you know how to use it, we're all set to look at a first application: image classification.
 
 Regarding workflow, we'll see how to:
 
@@ -1829,37 +907,17 @@ Regarding workflow, we'll see how to:
 -   speed up training;
 -   and more.
 
-Secondly -- beyond an efficient workflow -- the task in question matters. Compositions of linear layers, of the type we used to learn `torch` in the first part, will not suffice when our goal is to model images or time series. Successful use of deep learning means tailoring model architecture to the domain in question. To that end, we start from concrete tasks, and present applicable architectures directly by example.
-
-Concretely, the plan is the following. The upcoming two chapters will introduce you to workflow-related techniques that are indispensable in practice. You'll encounter another package, `luz`, that endows `torch` with an important layer of abstraction, and significantly streamlines the workflow. Once you know how to use it, we're all set to look at a first application: image classification. To improve on our initial results, we then back up and explore two more advanced workflow-related topics: how to improve generalization, and how to speed up training. Equipped with that knowledge, we first return to images, before extending our domain-related skills to tabular data, time series, and audio.
-
 
 
 ## 13. Loading data
 
-Our toy example, which we'll see a third (and last) version of in the next chapter, had the model train on a tiny set of data -- small enough to pass all observations to the model in one go. What if that wasn't the case? Say we had 10,000 items instead, and every item was an RGB image of size 256 x 256 pixels. Even on very powerful hardware, we could not possibly train a model on the complete data all at once.
+**Using `dataset()`**
 
-For that reason, deep-learning frameworks like `torch` include an input pipeline that lets you pass data to the model in *batches* -- that is, subsets of observations. Involved in this process are two classes: `dataset()` and `dataloader()`. Before we look at how to construct instances of these, let's characterize them by what they're *for*.
+1. `initialize(...)`
+2. `.getitem(i)`
+3. `.length()`
 
-## Data vs. `dataset()`\index{\texttt{dataset()}} vs. `dataloader()`\index{\texttt{dataloader()}} -- what's the difference?
-
-In this book, "dataset" (variable-width font, no parentheses), or just "the data", usually refers to things like R matrices, `data.frame`s, and what's contained therein. A `dataset()` (fixed-width font, parentheses), however, is a `torch` object that knows how to do one thing: *deliver to the caller a* *single item.* That item, usually, will be a list, consisting of one input and one target tensor. (It could be anything, though -- whatever makes sense for the task. For example, it could be a single tensor, if input and target are the same. Or more than two tensors, in case different inputs should be passed to different modules.)
-
-As long as it fulfills the above-stated contract, a `dataset()` is free to do whatever needs to be done. It could, for example, download data from the internet, store them in some temporary location, do some pre-processing, and when asked, return bite-sized chunks of data in just the shape expected by a certain class of models. No matter what it does in the background, all its caller cares about is that it return a single item. Its caller, that's the `dataloader()`.
-
-A `dataloader()`'s role is to feed input to the model in *batches*. One immediate reason is computer memory: Most `dataset()`s will be far too large to pass them to the model in one go. But there are additional benefits to batching. Since gradients are computed (and model weights updated) once per *batch*, there is an inherent stochasticity to the process, a stochasticity that helps with model training. We'll talk more about that in an upcoming chapter.
-
-### Using `dataset()`s
-
-`dataset()`s come in all flavors, from ready-to-use -- and brought to you by some package, `torchvision` or `torchdatasets`, say, or any package that chooses to provide access to data in `torch`-ready form -- to fully customized (made by you, that is). Creating `dataset()`s is straightforward, since they are R6 objects, and there's just three methods to be implemented. These methods are:
-
-1.  `initialize(...)`. Parameters to `initialize()` are passed when a `dataset()` is instantiated. Possibilities include, but are not limited to, references to R `data.frame`s, filesystem paths, download URLs, and any configurations and parameterizations expected by the `dataset()`.
-2.  `.getitem(i)`. This is the method responsible for fulfilling the contract. Whatever it returns counts as a single item. The parameter, `i`, is an index that, in many cases, will be used to determine the starting position in the underlying data structure (a `data.frame` of file system paths, for example). However, the `dataset()` is not *obliged* to actually make use of that parameter. With extremely huge `dataset()`s, for example, or given serious class imbalance, it could instead decide to return items based on *sampling*.
-3.  `.length()`. This, usually, is a one-liner, its only purpose being to inform about the number of available items in a `dataset()`.
-
-Here is a blueprint for creating a `dataset()`:
-
-```
+```{r}
 ds <- dataset()(
   initialize = function(...) {
     ...
@@ -1873,32 +931,11 @@ ds <- dataset()(
 )
 ```
 
-That said, let's compare three ways of obtaining a `dataset()` to work with, from tailor-made to maximally effortless.
-
-#### A self-built `dataset()`
-
-Let's say we wanted to build a classifier based on the popular `iris` alternative, `palmerpenguins`.
-
 ```{r}
 library(torch)
 library(palmerpenguins)
 library(dplyr)
 
-penguins %>% glimpse()
-```
-
-    $ species           <fct> Adelie, Adelie, Adelie, Adelie,...
-    $ island            <fct> Torgersen, Torgersen, Torgersen,...
-    $ bill_length_mm    <dbl> 39.1, 39.5, 40.3, NA, 36.7, 39.3,...
-    $ bill_depth_mm     <dbl> 18.7, 17.4, 18.0, NA, 19.3, 20.6,...
-    $ flipper_length_mm <int> 181, 186, 195, NA, 193, 190, 181,...
-    $ body_mass_g       <int> 3750, 3800, 3250, NA, 3450, 3650,...
-    $ sex               <fct> male, female, female, NA, female,...
-    $ year              <int> 2007, 2007, 2007, 2007, 2007,...
-
-In predicting `species`, we want to make use of just a subset of columns: `bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`, and `body_mass_g`. We build a `dataset()` that returns exactly what is needed:
-
-```{r}
 penguins_dataset <- dataset(
   name = "penguins_dataset()",
   initialize = function(df) {
@@ -1915,22 +952,8 @@ penguins_dataset <- dataset(
     dim(self$x)[1]
   }
 )
-```
 
-Once we've instantiated a `penguins_dataset()`, we should immediately perform some checks. First, does it have the expected length?
-
-```{r}
-ds <- penguins_dataset(penguins)
-length(ds)
-```
-
-    [1] 333
-
-And second, do individual elements have the expected shape and data type? Conveniently, we can access `dataset()` items like tensor values, through indexing:
-
-```{r}
 ds[1]
-
 ```
 
     $x
@@ -1946,37 +969,7 @@ ds[1]
     1
     [ CPULongType{} ]
 
-This also works for items "further down" in the `dataset()` -- it has to: When indexing into a `dataset()`, what happens in the background is a call to `.getitem(i)`, passing along the desired position `i`.
-
-Truth be told, in this case we didn't really have to build our own `dataset()`. With so little pre-processing to be done, there is an alternative: `tensor_dataset()`.
-
-#### `tensor_dataset()`
-
-When you already have a tensor around, or something that's readily converted to one, you can make use of a built-in `dataset()` generator: `tensor_dataset()`. This function can be passed any number of tensors; each batch item then is a list of tensor values:
-
-```{r}
-three <- tensor_dataset(
-  torch_randn(10), torch_randn(10), torch_randn(10)
-)
-three[1]
-```
-
-    [[1]]
-    torch_tensor
-    0.522735
-    [ CPUFloatType{} ]
-
-    [[2]]
-    torch_tensor
-    -0.976477
-    [ CPUFloatType{} ]
-
-    [[3]]
-    torch_tensor
-    -1.14685
-    [ CPUFloatType{} ]
-
-In our `penguins` scenario, we end up with two lines of code:
+**`tensor_dataset()`**
 
 ```{r}
 penguins <- na.omit(penguins)
@@ -1986,61 +979,14 @@ ds <- tensor_dataset(
     as.numeric(penguins$species)
   )$to(torch_long())
 )
-
-ds[1]
 ```
 
-Admittedly though, we have not made use of all the dataset's columns. The more pre-processing you need a `dataset()` to do, the more likely you are to want to code your own.
 
-Thirdly and finally, here is the most effortless possible way.
-
-#### `torchvision::mnist_dataset()`
-
-When you're working with packages in the `torch` ecosystem, chances are that they already include some `dataset()`s, be it for demonstration purposes or for the sake of the data themselves. `torchvision`, for example, packages a number of classic image datasets -- among those, that archetype of archetypes, MNIST.
-
-Since we're going to talk about image processing in a later chapter, I won't comment on the arguments to `mnist_dataset()` here; we do, however, include a quick check that the data delivered conform to what we'd expect:
-
-```{r}
-library(torchvision)
-
-ds <- mnist_dataset(
-  root = ".",
-  train = TRUE, # default
-  download = TRUE,
-  transform = function(x) {
-    x %>% transform_to_tensor() 
-  }
-)
-
-first <- ds[1]
-cat("Image shape: ", first$x$shape, " Label: ", first$y, "\n")
-```
-
-    Image shape:  1 28 28  Label:  6 
-
-At this point, that is all we need to know about `dataset()`s -- we'll encounter plenty of them in the course of this book. Now, we move on from the one to the many.
-
-### Using `dataloader()`s
-
-Continuing to work with the newly created MNIST `dataset()`, we instantiate a `dataloader()` for it. The `dataloader()` will deliver pairs of images and labels in batches: thirty-two at a time. In every epoch, it will return them in different order (`shuffle = TRUE`):
+**Using `dataloader()`**
 
 ```{r}
 dl <- dataloader(ds, batch_size = 32, shuffle = TRUE)
-```
 
-Just like `dataset()`s, `dataloader()`s can be queried about their length:
-
-```{r}
-length(dl)
-```
-
-    [1] 1875
-
-This time, though, the returned value is not the number of items; it is the number of batches.
-
-To loop over batches, we first obtain an iterator, an object that knows how to traverse the elements in this `dataloader()`. Calling `dataloader_next()`, we can then access successive batches, one by one:
-
-```{r}
 first_batch <- dl %>%
   # obtain an iterator for this dataloader
   dataloader_make_iter() %>% 
@@ -2053,13 +999,9 @@ dim(first_batch$y)
     [1] 32  1 28 28
     [1] 32
 
-If you compare the batch shape of `x` -- the image part -- with the shape of an individual image (as inspected above), you see that now, there is an additional dimension in front, reflecting the number of images in a batch.
-
-The next step is passing the batches to a model. This -- in fact, this as well as the complete, end-to-end deep-learning workflow -- is what the next chapter is about.
 
 
-
-## 14. Training with luz {#sec:luz}
+## 14. Training with luz [Exercise]
 
 At this point in the book, you know how to train a neural network. Truth be told, though, there's some cognitive effort involved in having to remember the right execution order of steps like `optimizer$zero_grad()`, `loss$backward()`, and `optimizer$step()`. Also, in more complex scenarios than our running example, the list of things to actively remember gets longer.
 
@@ -2605,7 +1547,7 @@ This completes our walk-through of manual training, and should have made more co
 
 
 
-## 15. A first go at image classification {#sec:image-classification-1}
+## 15. A first go at image classification [Exercise]
 
 ### What does it take to classify an image?
 
