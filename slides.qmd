@@ -29,13 +29,13 @@ This workshop presents a conceptual overview of the [R interface for PyTorch](ht
 
 <center>![](Keydana.jpg)</center>
 
-## Three Goals
+## About the book
 
-This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this writing, is one of the major deep-learning and scientific-computing frameworks, widely used across industries and areas of research. With `torch`, you get to access its rich functionality directly from R, with no need to install, let alone learn, Python. Though still "young" as a project, `torch` already has a vibrant community of users and developers; the latter not just extending the core framework, but also, building on it in their own packages.
+This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this writing, is one of the major deep-learning and scientific-computing frameworks, widely used across industries and areas of research.
 
-1. The first is a thorough introduction to core `torch`: the basic structures without whom nothing would work.
-2. In the second section, basics explained, we proceed to explore various applications of deep learning, ranging from image recognition over time series and tabular data to audio classification. 
-3. The third section is special in that it highlights some of the non-deep-learning things you can do with `torch`: matrix computations, calculating the Discrete Fourier Transform, and wavelet analysis.
+1. Introduction to core `torch`: Basic structures, automatic differentiation, optimizers, etc.
+2. Applications of deep learning: Image recognition, time series, audio classification, etc. 
+3. Non-deep-learning: Matrix computations, calculating the Discrete Fourier Transform, and wavelet analysis.
 
 
 ## Workshop Contents
@@ -50,15 +50,7 @@ This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this wr
   * Basic image classification: 13, `14`, `15`
   * Opitmized image classification: 16, 17, 18
 
-**Reproducing Chapters:**
-
-* Tensors (chapter 3)
-* A neural network from scratch (chapter 6)
-* Modularizing the neural network (chapter 11)
-* Training with luz (chapter 14)
-* A first go at image classification - using ImageNet (242MB) (chapter 15)
-
-**Remaining chapters are left to the reader**
+*Remaining chapters are left to the reader*
 
 # Setup
 
@@ -156,11 +148,13 @@ install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/_
 
 ## 2. What is torch?
 
-`torch` is an R port of PyTorch, one of the two (as of this writing) most-employed deep learning frameworks in industry and research. By its design, it is also an excellent tool to use in various types of scientific computation tasks (a subset of which you'll encounter in the book's final part). It is written entirely in R and C++ (including a bit of C). No Python installation is required to use it.
+`torch` is an R port of PyTorch.
 
-There's a vibrant community of developers, of diverse origin and with diverse goals, working to further develop and extend `torch`, so it can help more and more people accomplish their various tasks. 
+It is written entirely in R and C++ (including a bit of C). No Python installation is required to use it.
 
-There are three packages used in the book: `torchvision` , `torchaudio`, and `luz`.
+There's a vibrant community of developers
+
+The `torch for R` ecosystem also includes R packages: `torchvision` , `torchaudio`, and `luz`.
 
 ## 3. Tensors [Exercise]
 
@@ -170,7 +164,7 @@ To do anything useful with `torch`, you need to know about tensors. Not tensors 
 
 In fact, a `torch` `tensor` is like an R `array`, in that it can be of arbitrary dimensionality. But unlike `array`, it is designed for fast and scalable execution of mathematical calculations, and you can move it to the GPU. (It also has an extra capability of enormous practical impact -- automatic differentiation -- but we reserve that for the next chapter.)
 
-**Exercises:**
+**Topics:**
 
 1. Creating tensors
 2. Operations on tensors\index{tensors!operations on}
@@ -291,18 +285,6 @@ for (i in 1:num_iterations) {
   })
 }
 ```
-
-    Iteration:  100 
-    Value is:  0.3502924 
-    Gradient is:  -0.667685 -0.5771312 
-
-    Iteration:  200 
-    Value is:  0.07398106 
-    Gradient is:  -0.1603189 -0.2532476 
-
-    Iteration:  300 
-    Value is:  0.02483024 
-    Gradient is:  -0.07679074 -0.1373911 
 
     Iteration:  400 
     Value is:  0.009619333 
@@ -661,9 +643,11 @@ mlp <- nn_sequential(
 
 ## 8. Optimizers {#sec:optimizers}
 
-Why optimizers? 
+![](images/optimizers-adam.png)
 
 **1. Optimizers help in updating weights**
+
+Without optimizers
 
 ```{r}
 library(torch)
@@ -691,7 +675,7 @@ with_no_grad({
 })
 ```
 
-Now, update weights with an optimizer.
+With optimizers
 
 ```{r}
 # compute gradient of loss w.r.t. all tensors with
@@ -709,24 +693,18 @@ optimizer$step()
 
 **2. Optimizers help minimize the loss function**
 
-**Things that matter:**
-
-1. Keep momentum. instead of starting in a completely new direction every time we re-compute the gradient, we might want to keep a bit of the old direction.
-2. Update individual learning rates. Looking back at just that example of minimizing a non-symmetric function ... Why, really, should we be constrained to using the same learning rate for all variables? When it's evident that all variables don't vary to the same degree.
-3. Update parameters as learning progresses. This is a fix for problems that only arise once you've taken actions to reduce the learning rate for overly-impactful features -- you also want to make sure that as learning still progresses, that parameters still get updated.
-
-**Update strategies:**
+Without optimizers
 
 * Stochastic gradient descent (baseline)
-* Gradient descent with momentum
-* Adagrad
-* RMSProp
-* Adam
 
-Adam combines momentum and parameter-dependent updates, to avoid excessive dependence on fast-changing parameters.
+With optimizers
 
-![Adam (white), compared with vanilla SGD (gray).](images/optimizers-adam.png)
-![Adam (white), compared with vanilla SGD (gray).](images/optimizers-adam.png)
+* Gradient descent (with momentum)
+* Adagrad (adaptive learning rate)
+* RMSProp (adapative learning rate)
+* Adam (adapative learning rate and momentum)
+
+![](images/1x1.png)
 
 
 
@@ -736,11 +714,8 @@ Adam combines momentum and parameter-dependent updates, to avoid excessive depen
 
 ```{r}
 library(torch)
-
 loss <- (y_pred - y)$pow(2)$sum()
 ```
-
-**`torch` loss functions**
 
 In `torch`, loss functions start with `nn_` or `nnf_`.
 
@@ -755,10 +730,6 @@ nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
 
 **What loss function should I choose?**
 
-* Maximum likelihood
-* Regression
-* Classification
-
 
 |        |          |             |            |               |           |
 |--------|----------|-------------|------------|---------------|-----------|
@@ -769,7 +740,6 @@ nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
 | *BCe*  | Y        |             |            | Y             |           |
 | *Nll*  |          | Y           |            |               | Y         |
 
-: Loss functions, by type of data they work on (binary vs. multi-class) and expected input (raw scores, probabilities, or log probabilities). {#tbl-loss-funcs-features}
 
 |        |                                          |
 |--------|------------------------------------------|
@@ -795,32 +765,7 @@ With line search, we spend some time evaluating how far to follow the descent di
 1. Exact. Take the current point, compute the descent direction, and hard-code them as givens in a *second* function that depends on the learning rate only. Then, differentiate this function to find *its* minimum. The solution will be the learning rate that optimizes the step length taken.
 2. Approximate search. Essentially, we look for something that is *just* *good enough*. Among the most established heuristics are the *Strong Wolfe conditions*, and this is the strategy implemented in `torch`'s `optim_lbfgs()`.
 
-```{r}
-num_iterations <- 2
-
-x <- torch_tensor(c(-1, 1), requires_grad = TRUE)
-
-optimizer <- optim_lbfgs(x, line_search_fn = "strong_wolfe")
-
-calc_loss <- function() {
-  optimizer$zero_grad()
-
-  value <- rosenbrock(x)
-  cat("Value is: ", as.numeric(value), "\n")
-
-  value$backward()
-  value
-}
-
-for (i in 1:num_iterations) {
-  cat("\nIteration: ", i, "\n")
-  optimizer$step(calc_loss)
-}
-```
-
 ## 11. Modularizing the neural network [Exercise]
-
-Conceptually, we distinguish four phases. We make the code more modular and more readable.
 
 -   The forward pass, instead of calling functions on tensors, will call the model.
 
@@ -830,35 +775,6 @@ Conceptually, we distinguish four phases. We make the code more modular and more
 
 -   Weight updating is taken care of by the optimizer.
 
-**Data**
-
-```{r}
-library(torch)
-
-# input dimensionality (number of input features)
-d_in <- 3
-# number of observations in training set
-n <- 100
-
-x <- torch_randn(n, d_in)
-coefs <- c(0.2, -1.3, -0.5)
-y <- x$matmul(coefs)$unsqueeze(2) + torch_randn(n, 1)
-```
-
-**Network**
-
-```{r}
-# dimensionality of hidden layer
-d_hidden <- 32
-# output dimensionality (number of predicted features)
-d_out <- 1
-
-net <- nn_sequential(
-  nn_linear(d_in, d_hidden),
-  nn_relu(),
-  nn_linear(d_hidden, d_out)
-)
-```
 
 **Training**
 
@@ -912,9 +828,7 @@ Regarding workflow, we'll see how to:
 
 **Using `dataset()`**
 
-1. `initialize(...)`
-2. `.getitem(i)`
-3. `.length()`
+Overview
 
 ```{r}
 ds <- dataset()(
@@ -929,6 +843,8 @@ ds <- dataset()(
   }
 )
 ```
+
+Example
 
 ```{r}
 library(torch)
@@ -968,7 +884,7 @@ ds[1]
     1
     [ CPULongType{} ]
 
-**`tensor_dataset()`**
+**Using `tensor_dataset()`**
 
 ```{r}
 penguins <- na.omit(penguins)
@@ -1002,40 +918,11 @@ dim(first_batch$y)
 
 ## 14. Training with luz [Exercise]
 
-`luz` was designed to make deep learning with `torch` as effortless as possible, while at the same time allowing for easy customization. `luz` helps:
+`luz` was designed to make deep learning with `torch` as effortless as possible. `luz` helps manage:
 
-* Handling the usual three stages of machine learning
-  * Training
-  * Validation
-  * Testing
-* Maintaining flexibility with callbacks
-* Managing data flow between *devices* (CPU and GPU, if you have one).
-
-**Data**
-
-```{r}
-train_ids <- sample(1:length(ds), size = 0.6 * length(ds))
-valid_ids <- sample(
-  setdiff(1:length(ds), train_ids),
-  size = 0.2 * length(ds)
-)
-test_ids <- setdiff(
-  1:length(ds),
-  union(train_ids, valid_ids)
-)
-
-train_ds <- dataset_subset(ds, indices = train_ids)
-valid_ds <- dataset_subset(ds, indices = valid_ids)
-test_ds <- dataset_subset(ds, indices = test_ids)
-
-train_dl <- dataloader(train_ds,
-  batch_size = 100, shuffle = TRUE
-)
-valid_dl <- dataloader(valid_ds, batch_size = 100)
-test_dl <- dataloader(test_ds, batch_size = 100)
-```
-
-**Model**
+* Training, validation, and testing
+* Customization flexibility with callbacks
+* Data flow between *devices* (CPU and GPU, if you have one).
 
 ```{r}
 fitted <- net %>%
@@ -1044,28 +931,24 @@ fitted <- net %>%
     optimizer = optim_adam,
     metrics = list(luz_metric_mae())
   ) %>%
-  set_hparams(
-    d_in = d_in,
-    d_hidden = d_hidden, d_out = d_out
-  ) %>%
-  fit(train_dl, epochs = 20, valid_data = valid_dl)
-```
+  set_hparams(d_in = d_in,
+              d_hidden = d_hidden,
+              d_out = d_out) %>%
+  fit(
+    train_dl,
+    epochs = 200,
+    valid_data = valid_dl,
+    callbacks = list(
+      luz_callback_model_checkpoint(path = "./models/",
+                                    save_best_only = TRUE),
+      luz_callback_early_stopping(patience = 10)
+    )
+  )
 
-**Performance**
-
-```{r}
-fitted %>% evaluate(test_dl)
-```
-
-**Predict**
-
-```{r}
 fitted %>% predict(test_dl)
 ```
 
-**How `luz` helps with devices**
-
-For thecall to `predict()`, what happened "under the hood" was the following:
+How `luz` helps with devices. For the call to `predict()`, what happened "under the hood" was the following:
 
 -   `luz` put the model in evaluation mode, making sure that weights are not updated.
 -   `luz` moved the test data to the GPU, batch by batch, and obtained model predictions.
@@ -1081,23 +964,21 @@ This chapter is about “convolutional” neural networks; the specialized modul
 ![](images/images-feature-visualization.png)
 
 
-**Glossary**
+**Glossary of terms**
 
 * Convolution / Cross-correlation: Which finds things, or spots similarities.
 * Filter / kernel: Maps non-linear data into a higher-dimensional space without the need to visit or understand that higher-dimensional space.
+  * Padding: Allows the kernel to extend outside the valid region.
+  * Stride: The way a kernel moves over the image.
+  * Dilation: Spreads out the pixels in a convolution.
 * Translation invariant: If a shift has occurred, the target is still detected, but at a new location.
 * Pooling: Down sample feature maps by summarizing the presence of features in patches of the feature map.
-* Padding: Allows the kernel to extend outside the valid region.
-* Stride: The way a kernel moves over the image.
-* Dilation: Spreads out the pixels in a convolution.
 
 **New Package**
 
-`torchvision`
-
-**Datasets**
-
 In addition to `torch` and `luz`, we load a third package from the `torch` ecosystem: `torchvision`. `torchvision` provides operations on images, as well as a set of pre-trained models and common benchmark datasets.
+
+**Dataset**
 
 ```{r}
 library(torch)
@@ -1127,7 +1008,7 @@ valid_ds <- tiny_imagenet_dataset(
 
 ```
 
-**Dataloaders**
+**Dataloader**
 
 ```{r}
 train_dl <- dataloader(train_ds,
@@ -1214,18 +1095,15 @@ torch_argmax(preds, dim = 2)
 
 ## 16. Making models generalize {#sec:overfitting}
 
+**Original image**
 
 ![](images/overfitting-mnist-test.png)
 
-**Classic data augmentation**
-
-* Rotations
-* Flips
-* Translations
+**Rotations, flips, translations**
 
 ![](images/overfitting-mnist-transforms.png)
 
-*Mixup*
+**Mixup**
 
 ![](images/overfitting-mnist-mixup-0.5.png)
 
@@ -1262,13 +1140,13 @@ In deep learning, early stopping is ubiquitous; it’s hard to imagine why one w
 
 -   Early stopping. This will not just prevent overfitting, but also, save time.
 
-**Compare training runs**
+**Exercises (slow)**
 
--   First training: We take the convnet from three chapters ago, and add dropout layers.
+-   First training: Take the convnet from three chapters ago, and add dropout layers.
 
--   Second training: We replace dropout by batch normalization. (Everything else stays the same.)
+-   Second training: Replace dropout by batch normalization. (Everything else stays the same.)
 
--   Third training: We replace the model completely, by one chaining a pre-trained feature classifier (ResNet) and a small sequential model.
+-   Third training: Replace the model completely, by one chaining a pre-trained feature classifier (ResNet) and a small sequential model.
 
 
 # Appendix
