@@ -1,13 +1,12 @@
 # Deep Learning and Scientific Computing with R torch
 
-## Materials
-
-These materials are for the Rocky Mountain Advanced Computing Consortium’s (RMACC) High Performance Computing Symposium (5/18/2023). [For slides click here](https://rpubs.com/nwstephens/torch-workshop).
-
 ![](Keydana.jpg)
 
 This workshop presents a conceptual overview of the [R interface for PyTorch](https://torch.mlverse.org/). Emphasis will be on basic structures and applications for deep learning. Material for this workshop is based on the new book, [Deep Learning and Scientific Computing with R torch](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/) by [Sigrid Keydana](https://divergences.xyz/). With torch there is no need to install or use Python. Torch and its associated packages – torchaudio, torchvision, luz – will run on CPU or GPU. This workshop will demonstrate torch for R using an NVIDIA GPU environment, which significantly accelerates computations.
 
+## Materials
+
+These materials are for the Rocky Mountain Advanced Computing Consortium’s (RMACC) High Performance Computing Symposium (5/18/2023). [For slides click here](https://rpubs.com/nwstephens/torch-workshop).
 
 ## Getting Started
 
