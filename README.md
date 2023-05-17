@@ -1,6 +1,8 @@
 # torch-workshop
 
-This workshop presents a conceptual overview of the [R interface for PyTorch](https://torch.mlverse.org/). Emphasis will be on basic structures and applications for deep learning. With torch there is no need to install or use Python. Torch and its associated packages – torchaudio, torchvision, luz – will run on CPU or GPU. This workshop will demonstrate torch for R using an NVIDIA GPU environment, which significantly accelerates computations. This workshop is part of the Rocky Mountain Advanced Computing Consortium’s (RMACC) High Performance Computing Symposium (5/18/2023).
+*This workshop is part of the Rocky Mountain Advanced Computing Consortium’s (RMACC) High Performance Computing Symposium (5/18/2023).*
+
+This workshop presents a conceptual overview of the [R interface for PyTorch](https://torch.mlverse.org/). Emphasis will be on basic structures and applications for deep learning. With torch there is no need to install or use Python. Torch and its associated packages – torchaudio, torchvision, luz – will run on CPU or GPU. This workshop will demonstrate torch for R using an NVIDIA GPU environment, which significantly accelerates computations. 
 
 ## Materials
 
