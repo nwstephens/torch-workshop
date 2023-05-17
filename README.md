@@ -1,8 +1,8 @@
 # Deep Learning and Scientific Computing with R torch
 
-*Materials for the Rocky Mountain Advanced Computing Consortium’s (RMACC) High Performance Computing Symposium (5/18/2023)*
+## Materials
 
-[Slides](https://rpubs.com/nwstephens/torch-workshop)
+These materials are for the Rocky Mountain Advanced Computing Consortium’s (RMACC) High Performance Computing Symposium (5/18/2023). [For slides click here](https://rpubs.com/nwstephens/torch-workshop).
 
 ![](Keydana.jpg)
 
