@@ -13,3 +13,12 @@ Workshop Contents
 * Deep learning with torch
   * Basic image classification: 13, **14**, **15**
   * Opitmized image classification: 16, 17, 18
+  
+Resources
+=====================
+
+* [Torch for R](https://torch.mlverse.org/)
+* [Deep Learning and Scientific Computing with R Torch](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/)
+* [Advanced R](https://adv-r.hadley.nz/r6.html)
+* [Github](https://github.com/nwstephens/torch-workshop)
+* [Chat-GPT](https://chat.openai.com/)
