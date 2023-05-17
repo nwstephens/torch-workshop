@@ -30,7 +30,7 @@ This workshop presents a conceptual overview of the [R interface for PyTorch](ht
 
 ## About the book
 
-This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this writing, is one of the major deep-learning and scientific-computing frameworks, widely used across industries and areas of research.
+Structured in three parts
 
 1.  Introduction to core `torch`: Basic structures, automatic differentiation, optimizers, etc.
 2.  Applications of deep learning: Image recognition, time series, audio classification, etc.
@@ -46,7 +46,7 @@ This is a book about `torch`, the R interface to PyTorch. PyTorch, as of this wr
     -   Abstraction: 7, 8, `11`
 -   Deep learning with torch
     -   Basic image classification: 13, `14`, `15`
-    -   Opitmized image classification: 16, 17, 18
+    -   Optimized image classification: 16, 17, 18
 
 *Remaining chapters are left to the reader*
 
@@ -145,9 +145,9 @@ install.packages("modeldata", repos = "https://packagemanager.rstudio.com/cran/_
 
 # Getting Familiar with torch
 
-## 2. What is torch?
+## 2. What is torch for R?
 
-`torch` is an R port of PyTorch.
+The `torch` package is an R port of PyTorch.
 
 It is written entirely in R and C++ (including a bit of C). No Python installation is required to use it.
 
@@ -621,7 +621,7 @@ torch_tensor
 ```{r}
 x <- torch_randn(50, 5)
 output <- l(x)
-output$size() # foward pass
+output$size() # forward pass
 ```
 
 ```         
@@ -1126,7 +1126,7 @@ In deep learning, early stopping is ubiquitous; it's hard to imagine why one wou
 -   Learning rate finder with a learning rate schedule.
 -   Early stopping. This will not just prevent overfitting, but also, save time.
 
-**Exercises (slow)**
+**Examples (slow)**
 
 -   First training: Take the convnet from three chapters ago, and add dropout layers.
 -   Second training: Replace dropout by batch normalization. (Everything else stays the same.)
