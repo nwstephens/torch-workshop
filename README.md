@@ -8,9 +8,7 @@ This workshop presents a conceptual overview of the [R interface for PyTorch](ht
 
 ![](Keydana.jpg)
 
-Materials for this workshop are based on the new book, [Deep Learning and Scientific Computing with R torch](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/) by [Sigrid Keydana](https://divergences.xyz/). 
-
-[For slides click here](https://rpubs.com/nwstephens/torch-workshop).
+Materials for this workshop are based on the new book, [Deep Learning and Scientific Computing with R torch](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/) by [Sigrid Keydana](https://divergences.xyz/). [For slides click here](https://rpubs.com/nwstephens/torch-workshop).
 
 ## Getting Started
 
